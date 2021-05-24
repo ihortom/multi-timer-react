@@ -1,0 +1,334 @@
+@import "bootstrap/bootstrap.min.css";
+
+$menu-button-color-active: #17a2b8;
+$timer-color: #f8f9fa;
+$timer-border: #17a2b8;
+$timer-control-form-height: 34px;
+
+.App {
+  text-align: center;
+  padding: 10px;
+  width: 496px;
+}
+
+.menu {
+  button.btn {
+    padding: .1rem 1.2rem;
+    width: 4rem;
+    &.btn-light {
+      border: 1px solid $menu-button-color-active;
+      color: $menu-button-color-active;
+      &:focus {
+        background-color: #f8f9fa;
+        box-shadow: 0 0 0 0;
+      }
+      &:hover {
+        background-color: #e9ecef;
+      }
+    }
+    &.btn-info {
+      border: 1px solid $menu-button-color-active;
+      background-color: $menu-button-color-active;
+      color: #ffffff;
+      &:focus {
+        box-shadow: 0 0 0 0;
+      }
+    }
+  }
+}
+
+.alert {
+  margin-top: 10px;
+}
+
+.timer {
+  width: 100%;
+  margin: 10px auto;
+  background-color: $timer-color;
+  border: 1px solid #17a2b8;
+  border-radius: .3rem;
+  padding: 0.5rem;
+  .timer-note {
+    position: absolute;
+    height: 90px;
+    width: 458px;
+    background-color: $timer-color;
+    z-index: 100;
+    h6 {
+      margin-bottom: .4rem;
+      .name, .close, .trash  {
+        display: block;
+        float: right;
+        padding-bottom: 5px;
+      }
+      .name {
+        width: 320px;
+        text-align: center;
+      }
+      .close, .trash {
+        margin: -5px 0 0 2px;
+        cursor: pointer;
+        padding: 0 5px;
+        color: #212529;
+        background-color: #f8f9fa;
+        &:hover {
+          background-color: #e2e6ea;
+          border-color: #dae0e5;
+        }
+        svg {
+          vertical-align: text-bottom !important;
+        }
+      }
+    }
+    textarea {
+      font-size: .8rem;
+      height: 62px;
+      width: 456px;
+      resize: none;
+    }
+  }
+
+  .time {
+    float: left;
+    color: #000000;
+    &.active {
+      color: #0d6efd;
+    }
+  }
+
+  /* Time Pannel */
+  .time-pannel {
+    height: 2.5rem;
+    clear: both;
+    &.long .bell{
+      padding-right: 70px;
+    }
+    &.short .bell{
+      padding-right: 110px;
+    }
+    .time {
+      font-size: 1.6rem;
+    }
+    .time-buttons {
+      float: right;
+      .rounded-circle {
+        border-radius: 50%!important;
+        width: $timer-control-form-height;
+        height: $timer-control-form-height;
+      }
+      .btn-primary:focus {
+        background-color: #0d6efd;
+      }
+    }
+    .bell {
+      display: block;
+      padding: 5px 70px 5px 10px;
+      font-size: 1rem;
+      float: right;
+      color: $timer-color;
+    }
+    .bell.active {
+      color: #28a745
+    }
+    .bell.recursive {
+      color: #0dcaf0
+    }
+    .btn {
+      margin: 0 1px;
+      padding: 0 0;
+    }
+    .btn:focus{
+      box-shadow: 0 0 0 0;
+    }
+    .btn:active {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+  }
+  .progress {
+    height: 1px;
+    margin-bottom: 10px;
+  }
+  /* Time Control Pannel */
+  .timer-control {
+    .input-group-text {
+      font-size: 1rem;
+      padding: 0.5rem;
+      border-radius: .25rem 0 0 .25rem;
+    }
+    .input-group>.form-control {
+      width: 204px;
+      height: $timer-control-form-height;
+    }
+    .btn-group {
+      margin-left: 10px;
+      height: $timer-control-form-height;
+      .btn {
+        box-shadow: 0 0 0 0;
+      }
+      .btn-danger:focus{
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+      .btn-danger:active {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+      .btn-secondary:focus{
+        background-color: #6c757d;
+        border-color: #6c757d;
+      }
+      .btn-secondary:active {
+        background-color: #6c757d;
+        border-color: #6c757d;
+      }
+      .btn-light, .btn-warning, .btn-info {
+        border-color: #6c757d;
+      }
+      .btn-light:focus{
+        _background-color: #0d6efd;
+        _border-color: #0d6efd;
+      }
+      .btn-light:active {
+        _background-color: #0d6efd;
+        _border-color: #0d6efd;
+      }
+      .btn-light:hover {
+        background-color: #e9ecef;
+      }
+      button svg {
+        vertical-align: text-top;
+      }
+    }
+    .btn-group-sm>.btn {
+      font-size: 1rem;
+      padding: .35rem .5rem;
+    }
+  }
+}
+
+.dragged {
+  background-color: gold;
+  opacity: 0.3;
+}
+
+.react-icons {
+  vertical-align: text-bottom;
+  font-size: 1.6em;
+  cursor: pointer
+}
+
+.pressed {
+  background-color: cornflowerblue;
+}
+
+/* Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $menu-button-color-active;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
+}
+
+#settings .card {
+  margin-bottom: .75rem;
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 16px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/**/
+
+#about {
+  margin-top: 10px;
+}
+
+.info {
+  .body {
+    font-size: 0.85rem;
+    line-height: 1.25;
+    .label {
+      padding: 0 7px;
+      font-family: monospace;
+      font-size: larger;
+    }
+  }
+  .lead {
+    margin-bottom: 0;
+    padding: 1rem;
+  }
+  hr {
+    margin: 10px 0;
+    background-color: $timer-border;
+    opacity: 1;
+  }
+}
+
+.card-body {
+  padding: .6rem 1.25rem;
+  font-size: .9rem;
+  .label {
+    padding: 0 10px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+}
+
+.smaller {
+  font-size: 75%;
+}
+
+.small {
+  font-size: 50%;
+}
+
+.card {
+  border-color: $timer-border;
+}
+
+.card-header, .card-footer {
+  background-color: $timer-color;
+  border-color: $timer-border;
+}
