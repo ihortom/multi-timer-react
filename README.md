@@ -1,4 +1,4 @@
-# multi-timer-react
+# Multi-timer
 
 1. First install dependencies: ```npm install```
 2. In one terminal window run: ```npm run bundle``` to compile react code
