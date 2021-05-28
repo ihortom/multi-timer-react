@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
-import { GoHistory, GoStop, GoNote, GoSync, GoX, GoArrowUp, GoArrowDown, GoTrashcan} from 'react-icons/go';
+import { GoHistory, GoStop, GoNote, GoSync, GoX, GoArrowUp, GoArrowDown, GoTrashcan } from 'react-icons/go';
 
 const TimerControl = ({timer, time, reset, makeRecursive, updateName,
                        openNote, open, onDelete, onDown, onUp}) => {
@@ -44,9 +44,12 @@ const TimerControl = ({timer, time, reset, makeRecursive, updateName,
                     <Button variant="secondary" onClick={() => onDown(timer.id)} title="Move down"><GoArrowDown /></Button>{' '}
                     <Button variant="danger"
                         onClick={() => {
-                            pressDel(!del)
-                            if (del) onDelete(timer.id)}
-                        }
+                            pressDel(!del);
+                            if (del) {
+                                reset();  // clear badge
+                                onDelete(timer.id);
+                            }
+                        }}
                         onPointerLeave={() => pressDel(false)}
                         title="Delete">{ del ? <GoTrashcan /> : <GoX />}
                     </Button>
