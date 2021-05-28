@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button'
 
 const MenuItem = ({menuItem, onClick, addTimer, cancelDelete, onHideInactiveTimers}) => {
+
+    const [hide, pressHide] = useState(false);
+
+    useEffect(() => {
+        if (hide) {
+            const inactiveTimers = document.getElementsByClassName("time inactive")
+            const inactiveTimersIDs = Array();
+            for (var i=0; i < inactiveTimers.length; i++) {
+                inactiveTimersIDs.push(inactiveTimers[i].id.substring(5));
+            }
+            onHideInactiveTimers(inactiveTimersIDs);
+        }
+        else {
+            onHideInactiveTimers([]);
+        }
+    }, [hide]);
 
     return (
         <Button size="lg" disabled={menuItem.disabled} title={menuItem.title}
@@ -24,12 +40,7 @@ const MenuItem = ({menuItem, onClick, addTimer, cancelDelete, onHideInactiveTime
                     }
                 }
                 if (menuItem.id === 4) {   // hide inactive timers
-                    const inactiveTimers = document.getElementsByClassName("time inactive")
-                    const inactiveTimersIDs = Array();
-                    for (var i=0; i < inactiveTimers.length; i++) {
-                        inactiveTimersIDs.push(inactiveTimers[i].id.substring(5));
-                    }
-                    onHideInactiveTimers(inactiveTimersIDs);
+                    pressHide(!hide);
                 }
             }}
             onPointerLeave={() => {
