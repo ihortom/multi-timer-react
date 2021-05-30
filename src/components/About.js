@@ -7,7 +7,7 @@ const About = ({open}) => {
 
   const app = {
     name: "Multi-Timer",
-    version: "1.0.0",
+    version: "1.0.1",
     node: "12.16.2",
     electron: "10.4.3",
     react: "16.13.1",
