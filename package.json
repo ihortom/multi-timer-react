@@ -1,7 +1,7 @@
 {
   "name": "multi-timer-react",
   "productName": "Multi-Timer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Manage your time while multitasking",
   "main": "main.js",
   "repository": {
