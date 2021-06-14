@@ -13,6 +13,7 @@ const MenuItem = ({menuItem, onClick, addTimer, cancelDelete, onHideInactiveTime
                 inactiveTimersIDs.push(inactiveTimers[i].id.substring(5));
             }
             onHideInactiveTimers(inactiveTimersIDs);
+            window.electron.updateBadge('');
         }
         else {
             onHideInactiveTimers([]);
