@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import TimeButtons from './TimeButtons'
 import TimerControl from './TimerControl'
 import Note from './Note'
+import Clock from './Clock'
 import { GoBell } from 'react-icons/go';
 
 const Timer = ({timer, onDelete, onUp, onDown,
@@ -11,29 +12,87 @@ const Timer = ({timer, onDelete, onUp, onDown,
 
     const [time, setTime] = useState({
         timerId: timer.id,
-        time: 0, init: 0,
-        new: true,      // initial state
-        active: false,  // alarm on
-        recursive: false
-    })
+        time: 0, init: 0,   // seconds (current and initial)
+        new: true,          // state
+        active: false,      // alarm on
+        recursive: false,   // reoccuring countdown
+    });
 
     const [noteOpen, setOpen] = useState(false)
 
     const openNote = () => {
-        setOpen(!noteOpen)
+        setOpen(!noteOpen);
     }
 
-    const tick = () => {
-        let t;
+    // Clock
+    const [clockOpen, setClockVisibility] = useState(false)
 
-        if (time.time - 1 === 0 && time.recursive) {
+    const showClock = () => {
+        setClockVisibility(!clockOpen);
+    }
+
+    const [clock, setClock] = useState(new Date(0));
+
+    const hoursElement = useRef(null);
+    const minutesElement = useRef(null);
+
+    const setHoursElement = (element) => {
+        hoursElement.current = element;
+    }
+
+    const setMinutesElement = (element) => {
+        minutesElement.current = element;
+    }
+
+    const resetClock = () => {
+        if (hoursElement.current !== null) {
+            hoursElement.current.className = "hours form-control";
+            hoursElement.current.value = '';
+        }
+        if (minutesElement.current !== null) {
+            minutesElement.current.className = "minutes form-control";
+            minutesElement.current.value = '';
+        }
+    }
+
+    const getTime = (clockTime) => {
+        if (!time.time) {
+            resetTime();
+        }
+        const now = new Date();
+        if (clockTime > now) {
+            setClock(clockTime);
+            const diff = parseInt((clockTime - now) / 1000);
+            setTime({...time, time: diff, init: diff, new: false, active: false});
+        }
+    }
+
+    const timeOff = (seconds) => {
+        const now = new Date();
+        const then = new Date(now.setSeconds(seconds));
+        setClock(then);
+    }
+
+    const notifications = useRef([]);
+
+    // Countdown
+    const tick = (interval) => {
+        let t = time.time + 1;
+
+        if (t === 1 && time.recursive) {
             t = time.init;
+            const now = new Date();
+            timeOff(t + now.getSeconds());
         }
         else {
-            t = time.time - 1
+            // Handle time drift
+            const now = Math.floor(Date.now() / 1000);
+            const then = Math.floor(clock.getTime() / 1000);
+            t = then - now <= 0 ? 0 : then - now
         }
 
-        if (time.time - 1 === 0) {
+        // Time's up
+        if (t === 0) {
             const timerName = timer.name.length > 0 ? timer.name : "Timer";
 
             if (settings.soundAlarm) {
@@ -42,38 +101,48 @@ const Timer = ({timer, onDelete, onUp, onDown,
                 x.play();
             }
 
-            let notification = new Notification('Multi-Timer', {
+            const notification = new Notification('Multi-Timer', {
                 body: timerName
             });
+            notifications.current.push(notification);
+
 
             if (!time.recursive) {
                 window.electron.updateBadge(1);
+                clearInterval(interval);
             }
         }
 
-        if (time.time > 0) {
-            setTime(() => {
-                const active = time.time - 1 === 0 ? true : time.active
-                return {...time, time: t, active: active}
-            })
-        }
+        setTime(() => {
+            const active = t === 0 ? true : time.active
+            const init = (t === 0 && !time.recursive) ? 0 : time.init
+            return {...time, time: t, init: init, active: active}
+        });
+
     }
 
     useEffect(() => {
-        if (time.time > 0) {
-            const t = setInterval(() => {
-                tick()
+        let interval = null;
+        if (time.time || time.init) {
+            interval = setInterval(() => {
+                tick(interval);
             }, 1000);
-            return () => clearInterval(t);
         }
-    });
+        else {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [time]);
 
-    // Wind time up by given minutes
-    const windTime = (minutes) => {
+
+    // Wind time up by given seconds
+    const windTimeUp = (seconds) => {
         if (time.active && !time.new) {
             window.electron.updateBadge(-1);
         }
-        setTime(() => {return {...time, time: time.time + minutes, init: time.time + minutes, new: false}})
+        setTime({...time, time: time.time + seconds, init: time.time + seconds, new: false});
+        const now = new Date();
+        timeOff(time.time + seconds + now.getSeconds());
     }
 
     // Reset Time
@@ -81,12 +150,15 @@ const Timer = ({timer, onDelete, onUp, onDown,
         if (time.active && !time.new && !time.recursive) {
             window.electron.updateBadge(-1);
         }
-        setTime(() => {return {...time, time: 0, init: 0, new: true, active: false}});
+        setTime({...time, time: 0, init: 0, new: true, active: false});
+        setClock(new Date(0));
+        resetClock();
+        notifications.current.forEach((n) => n.close());
     }
 
     // Rewind time again to init time
     const makeRecursive = () => {
-        setTime(() => {return {...time, recursive: !time.recursive}})
+        setTime({...time, recursive: !time.recursive})
     }
 
     // Get bell class status
@@ -105,9 +177,9 @@ const Timer = ({timer, onDelete, onUp, onDown,
         const m = parseInt((seconds/60 - (h * 60)));
         const s = seconds - (h * 60 * 60) - m * 60;
         const t = {
-            h: h<=9 ? '0' + h.toString() : h.toString(),
-            m: m<=9 ? '0' + m.toString() : m.toString(),
-            s: s<=9 ? '0' + s.toString() : s.toString(),
+            h: h < 10 ? '0' + h.toString() : h.toString(),
+            m: m < 10 ? '0' + m.toString() : m.toString(),
+            s: s < 10 ? '0' + s.toString() : s.toString(),
         }
 
         if (settings.longFormat) {
@@ -117,7 +189,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
             let shortM;
             let shortH;
             if (s > 0) {
-                if (m+1 <= 9) {
+                if (m+1 < 10) {
                     shortM = '0' + (m+1).toString();
                 }
                 else {
@@ -125,7 +197,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
                 }
             }
             else if (m > 0 && m < 60) {
-                if (m <= 9) {
+                if (m < 10) {
                     shortM = '0' + (m).toString();
                 }
                 else {
@@ -137,7 +209,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
             }
 
             if (shortM === '60') {
-                shortH = h+1<=9 ? '0' + (h+1).toString() : (h+1).toString();
+                shortH = h + 1 < 10 ? '0' + (h+1).toString() : (h+1).toString();
                 shortM = '00'
             }
             else {
@@ -158,10 +230,14 @@ const Timer = ({timer, onDelete, onUp, onDown,
         >
             <Note open={noteOpen} openNote={openNote} timer={timer} time={getTimeAsString(time.time)} addNote={addNote} />
             <div className={`time-pannel${settings.longFormat ? " long" : " short"}`}>
+                <Clock open={clockOpen} timerId={timer.id} time={clock}
+                    duodecimalClock={settings.duodecimalClock} getTime={getTime}
+                    setHoursElement={setHoursElement} setMinutesElement={setMinutesElement}
+                />
                 <div className={`time${time.time > 0 ? " active" : " inactive"}`} id={`time-${timer.id}`}>
                     <span>{`${getTimeAsString(time.time)}`}</span>
                 </div>
-                <TimeButtons onWind={windTime} />
+                <TimeButtons onWind={windTimeUp} showClock={showClock} clockOpen={clockOpen} timerId={timer.id}/>
                 <span className={`bell${getBell()}`}><GoBell /></span>
             </div>
             <ProgressBar now={`${time.init > 0 ? time.time/time.init*100: 0}`} />
