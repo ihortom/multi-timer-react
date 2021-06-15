@@ -9,7 +9,7 @@ const About = ({open}) => {
         name: "Multi-Timer",
         version: "1.1.0",
         node: "12.16.2",
-        electron: "10.4.3",
+        electron: "10.4.7",
         react: "16.13.1",
         bootstrap: "4.6.0",
     }
