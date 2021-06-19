@@ -13,7 +13,7 @@ function createWindow() {
     const win = new BrowserWindow({
         titleBarStyle: "hidden",
         width: width,
-        height: 662,
+        height: 659,
         backgroundColor: "white",
         resizable: false,
         show: false,

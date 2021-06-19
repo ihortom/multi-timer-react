@@ -145,7 +145,11 @@ const Clock = ({open, timerId, time, getTime, duodecimalClock, setHoursElement, 
     return (
         <Collapse in={open} dimension="width" timeout={100}
             onEntered={() => {
-                document.querySelector('#' + `clock-${timerId}` + ' .hours').focus();
+                const hoursElement = document.querySelector('#' + `clock-${timerId}` + ' .hours');
+                const minutesElement = document.querySelector('#' + `clock-${timerId}` + ' .minutes');
+                hoursElement.focus();
+                setHoursElement(hoursElement);
+                setMinutesElement(minutesElement);
             }}
         >
             <InputGroup className="clock" size="sm" id={`clock-${timerId}`}>
