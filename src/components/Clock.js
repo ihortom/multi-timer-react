@@ -7,9 +7,10 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 
 import { GoClock } from 'react-icons/go'
 
-const Clock = ({open, timerId, time, getTime, duodecimalClock, setHoursElement, setMinutesElement}) => {
+const Clock = ({open, timerId, time, countdown, duodecimalClock, 
+                getTime, setHoursElement, setMinutesElement}) => {
 
-    const active = time.getTime() > 0 ? true : false;
+    const active = countdown > 0 ? true : false;
 
     const [clockFormat, setFormat] = useState(() => {
         const current = new Date();
@@ -38,42 +39,54 @@ const Clock = ({open, timerId, time, getTime, duodecimalClock, setHoursElement, 
         const now = new Date();
         if (element.value == '') {
             element.className = "hours form-control";
+            return true
         }
         else {
-            const hours = parseInt(element.value);
+            const hours = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
+            const minutes = /^(\d+)$/.test(element.nextElementSibling.value) ? parseInt(element.nextElementSibling.value) : 0
 
             if (clockFormat === '24H') {
                 if (hours < 0 || hours > 23 || isNaN(hours)) {
                     setTime(new Date(0));
                     element.className = "hours form-control warning";
+                    return false
                 }
                 else {
                     now.setHours(hours)
-                    now.setMinutes(clockTime.getMinutes())
-                    now.setSeconds(clockTime.getSeconds())
+                    now.setMinutes(minutes)
+                    now.setSeconds(0)
                     setTime(now)
                     element.className = "hours form-control";
+                    if (hours > 9) {
+                        element.nextElementSibling.focus();
+                    }
+                    return true
                 }
             }
-            else {
+            else {  // '12H: AM/PM'
                 if (hours < 0 || hours > 12 || isNaN(hours)) {
                     setTime(new Date(0));
                     element.className = "hours form-control warning";
+                    return false
                 }
                 else {
                     if (clockFormat === 'AM') {
                         now.setHours(hours)
-                        now.setMinutes(clockTime.getMinutes())
-                        now.setSeconds(clockTime.getSeconds())
+                        now.setMinutes(minutes)
+                        now.setSeconds(0)
                         setTime(now)
                     }
                     else {
                         now.setHours(hours + 12)
-                        now.setMinutes(clockTime.getMinutes())
-                        now.setSeconds(clockTime.getSeconds())
+                        now.setMinutes(minutes)
+                        now.setSeconds(0)
                         setTime(now)
                     }
                     element.className = "hours form-control";
+                    if (hours > 9) {
+                        element.nextElementSibling.focus();
+                    }
+                    return true
                 }
             }
         }
@@ -82,29 +95,37 @@ const Clock = ({open, timerId, time, getTime, duodecimalClock, setHoursElement, 
     const validateMinutes = (element) => {
         const now = new Date();
         if (element.value == '') {
+            now.setHours(clockTime.getHours());
+            now.setMinutes(0);
+            now.setSeconds(0);
+            setTime(now);
             element.className = "hours form-control";
+            return true
         }
         else {
-            const minutes = parseInt(element.value);
+            const minutes = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
             if (minutes < 0 || minutes > 59 || isNaN(minutes)) {
                 setTime(new Date(0));
                 element.className = "minutes form-control warning";
+                return false
             }
             else {
-                const hours = clockTime.getTime() ? clockTime.getHours() : 0;
+                const hours = /^(\d+)$/.test(element.previousElementSibling.value) ? parseInt(element.previousElementSibling.value) : 0
                 now.setHours(hours);
                 now.setMinutes(minutes);
-                now.setSeconds(clockTime.getSeconds());
+                now.setSeconds(0);
                 setTime(now);
                 element.className = "minutes form-control";
+                return true
             }
         }
     }
 
     const pretify = (element) => {
-        const value = parseInt(element.value);
+        const value = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
         if (!isNaN(value)) {
-            element.value = value < 10 ? '0' + value : value;
+            element.value = value >= 10 ? value.toString() :
+                              value < 0 ? '00' : '0' + value;
         }
     }
 
@@ -120,8 +141,17 @@ const Clock = ({open, timerId, time, getTime, duodecimalClock, setHoursElement, 
                 min.value = '';
             }
             else {
-                const hours = time.getHours();
-                const minutes = time.getMinutes();
+                let hours = time.getHours();
+                let minutes = time.getMinutes();
+                if (clockFormat !== '24H') {
+                    if (hours > 12) {
+                        hours = time.getHours() - 12;
+                        setFormat('PM');
+                    }
+                    else {
+                        setFormat('AM');
+                    }
+                }
 
                 hrs.value = hours < 10 ? '0' + hours : hours;
                 min.value = minutes < 10 ? '0' + minutes : minutes;
@@ -160,24 +190,37 @@ const Clock = ({open, timerId, time, getTime, duodecimalClock, setHoursElement, 
                     type="text"
                     onChange={(e) => {
                             e.preventDefault();
-                            validateHours(e.target);
                             setHoursElement(e.target);
                             setMinutesElement(e.target.nextElementSibling);
                     }}
                     onBlur={(e) => {
                         pretify(e.target);
+                        pretify(e.target.nextElementSibling);
+                        e.target.nextElementSibling.select();
+                    }}
+                    onKeyUp={(e) => {
+                        if (validateHours(e.target) && e.keyCode === 13) {
+                            const clockBtn = document.querySelector(`#clock-button-${timerId}`);
+                            clockBtn.click();
+                        }
                     }}
                 />
                 <FormControl className="minutes" placeholder="M" disabled={active}
                     type="text"
                     onChange={(e) => {
                             e.preventDefault();
-                            validateMinutes(e.target);
                             setMinutesElement(e.target);
                             setHoursElement(e.target.previousElementSibling);
                     }}
                     onBlur={(e) => {
                         pretify(e.target);
+                        pretify(e.target.previousElementSibling);
+                    }}
+                    onKeyUp={(e) => {
+                        if (validateMinutes(e.target) && e.keyCode === 13) {
+                            const clockBtn = document.querySelector(`#clock-button-${timerId}`);
+                            clockBtn.click();
+                        }
                     }}
                 />
                 <InputGroup className="legend">

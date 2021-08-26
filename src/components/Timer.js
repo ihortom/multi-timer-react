@@ -25,13 +25,12 @@ const Timer = ({timer, onDelete, onUp, onDown,
     }
 
     // Clock
-    const [clockOpen, setClockVisibility] = useState(false)
+    const [clockOpen, setClockVisibility] = useState(false);
+    const [clock, setClock] = useState(new Date(0));
 
     const showClock = () => {
         setClockVisibility(!clockOpen);
     }
-
-    const [clock, setClock] = useState(new Date(0));
 
     const hoursElement = useRef(null);
     const minutesElement = useRef(null);
@@ -134,7 +133,6 @@ const Timer = ({timer, onDelete, onUp, onDown,
         return () => clearInterval(interval);
     }, [time]);
 
-
     // Wind time up by given seconds
     const windTimeUp = (seconds) => {
         if (time.active && !time.new) {
@@ -152,7 +150,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
         }
         setTime({...time, time: 0, init: 0, new: true, active: false});
         setClock(new Date(0));
-        resetClock();
+        resetClock();   // UI
         notifications.current.forEach((n) => n.close());
     }
 
@@ -230,7 +228,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
         >
             <Note open={noteOpen} openNote={openNote} timer={timer} time={getTimeAsString(time.time)} addNote={addNote} />
             <div className={`time-pannel${settings.longFormat ? " long" : " short"}`}>
-                <Clock open={clockOpen} timerId={timer.id} time={clock}
+                <Clock open={clockOpen} timerId={timer.id} time={clock} countdown={time.time}
                     duodecimalClock={settings.duodecimalClock} getTime={getTime}
                     setHoursElement={setHoursElement} setMinutesElement={setMinutesElement}
                 />

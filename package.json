@@ -1,7 +1,7 @@
 {
   "name": "multi-timer-react",
   "productName": "Multi-Timer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Manage your time while multitasking",
   "main": "main.js",
   "repository": {
@@ -11,10 +11,9 @@
   "scripts": {
     "bundle": "webpack --config webpack.config.js",
     "watch": "webpack --config webpack.config.js --watch",
-    "host": "http-server --cors",
     "start": "export ENV=DEV && electron .",
     "package-mac": "export ENV=PROD && sudo electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/multi-timer.icns --prune=true --out=builds",
-    "create-installer-mac": "sudo electron-installer-dmg builds/Multi-Timer-darwin-x64/Multi-Timer.app Multi-Timer_v1.2.0 --title='Multi-Timer 1.2.0' --out=builds --overwrite --icon=assets/multi-timer.icns --background=assets/installer.png --icon-size=100"
+    "create-installer-mac": "sudo electron-installer-dmg builds/Multi-Timer-darwin-x64/Multi-Timer.app Multi-Timer_v1.2.1 --title='Multi-Timer 1.2.1' --out=builds --overwrite --icon=assets/multi-timer.icns --background=assets/installer.png --icon-size=100"
   },
   "keywords": [],
   "author": "Ihor Tomilenko",

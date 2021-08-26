@@ -7,6 +7,7 @@ const TimeButtons = ({onWind, showClock, clockOpen, timerId}) => {
     return (
         <div className="time-buttons">
             <Button className="rounded-circle" variant={`${clockOpen ? "primary" : "outline-primary"}`}
+                id={`clock-button-${timerId}`}
                 aria-controls={`clock-${timerId}`}
                 aria-expanded={clockOpen}
                 onClick={() => showClock()}><GoClock /></Button>
