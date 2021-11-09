@@ -7,7 +7,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 
 import { GoClock } from 'react-icons/go'
 
-const Clock = ({open, timerId, time, countdown, duodecimalClock, 
+const Clock = ({open, timerId, time, countdown, duodecimalClock,
                 getTime, setHoursElement, setMinutesElement}) => {
 
     const active = countdown > 0 ? true : false;
@@ -57,7 +57,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                     now.setSeconds(0)
                     setTime(now)
                     element.className = "hours form-control";
-                    if (hours > 9) {
+                    if (hours > 9 || element.value.length >= 2) {
                         element.nextElementSibling.focus();
                     }
                     return true
@@ -83,7 +83,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                         setTime(now)
                     }
                     element.className = "hours form-control";
-                    if (hours > 9) {
+                    if (hours > 9 || element.value.length >= 2) {
                         element.nextElementSibling.focus();
                     }
                     return true
@@ -163,11 +163,19 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                 min.value = ''; min.className = "minutes form-control";
                 getTime(new Date(0));
             }
-            else if (clockTime > new Date() && !active) {
+            else if (clockTime > new Date() && !active) {   // clock set today ahead of current time
                 getTime(clockTime);
             }
-            else if (!active) {
-                getTime(new Date(clockTime.setHours(clockTime.getHours() + 24)));
+            else if (!active) {     // clock set previous days or time is ealier than current time
+                const d = new Date();
+                const clockTimeStr = clockTime.toTimeString().substr(0,8);
+                const curentTimeStr = d.toTimeString().substr(0,8);
+                if (clockTimeStr > curentTimeStr) {
+                    getTime(new Date(clockTime.setDate(d.getDate())));
+                }
+                else {
+                    getTime(new Date(clockTime.setDate(d.getDate() + 1)));
+                }
             }
         }
     }, [open]);

@@ -144,7 +144,11 @@ body {
             color: $timer-color;
         }
         .bell.active {
-            color: #28a745
+            color: #28a745;
+            svg:hover {
+                color: #2c9142;
+                font-size: 1.1rem;
+            }
         }
         .bell.recursive {
             color: #0dcaf0
