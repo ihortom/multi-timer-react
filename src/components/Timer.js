@@ -154,6 +154,16 @@ const Timer = ({timer, onDelete, onUp, onDown,
         notifications.current.forEach((n) => n.close());
     }
 
+    // Silence Alarm
+    const silenceAlarm = (element) => {
+        if (time.active && !time.new && !time.recursive) {
+            window.electron.updateBadge(-1);
+        }
+        setTime({...time, active: false});
+        notifications.current.forEach((n) => n.close());
+        element.className = 'bell';  // clear alarm bell
+    }
+
     // Rewind time again to init time
     const makeRecursive = () => {
         setTime({...time, recursive: !time.recursive})
@@ -236,7 +246,9 @@ const Timer = ({timer, onDelete, onUp, onDown,
                     <span>{`${getTimeAsString(time.time)}`}</span>
                 </div>
                 <TimeButtons onWind={windTimeUp} showClock={showClock} clockOpen={clockOpen} timerId={timer.id}/>
-                <span className={`bell${getBell()}`}><GoBell /></span>
+                <span className={`bell${getBell()}`}>
+                    <GoBell onClick={(e) => silenceAlarm(e.target.closest('span.bell'))} />
+                </span>
             </div>
             <ProgressBar now={`${time.init > 0 ? time.time/time.init*100: 0}`} />
             <div className="timer-control-pannel">

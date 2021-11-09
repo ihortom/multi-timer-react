@@ -8,9 +8,9 @@ const About = ({open}) => {
 
     const app = {
         name: "Multi-Timer",
-        version: "1.2.1",
-        node: "12.16.2",
-        electron: "10.4.7",
+        version: "1.2.2",
+        node: "16.13.0",
+        electron: "15.3.0",
         react: "16.13.1",
         bootstrap: "4.6.0",
     }
@@ -43,8 +43,8 @@ const About = ({open}) => {
         }
         else {
             if (lastVersion.current !== null) {
-                versionStatus.innerHTML = 'Version ' + lastVersion.current.version + 
-                    ' is availble. <a target="_blank" class="open-externally" href="' + 
+                versionStatus.innerHTML = 'Version ' + lastVersion.current.version +
+                    ' is availble. <a target="_blank" class="open-externally" href="' +
                     lastVersion.current.url + '">Download</a>';
             }
             window.electron.configureExternalLinks();
@@ -58,14 +58,14 @@ const About = ({open}) => {
 
                 if (data !== null) {
                     const releases = Object.keys(data.releases);
-                    const relHashes = releases.map(i => 
+                    const relHashes = releases.map(i =>
                         [i, parseInt(i.split('.')[0])*10000 + parseInt(i.split('.')[1])*100 + parseInt(i.split('.')[2]), data.releases[i]])
 
                     const maxHash = Math.max(...relHashes.map(i => i[1]))
                     const latestRelease = relHashes.filter(i => i[1] === maxHash)[0]
 
                     lastVersion.current = {
-                        "version": latestRelease[0], 
+                        "version": latestRelease[0],
                         "url": latestRelease[2]
                     };
 
@@ -92,7 +92,7 @@ const About = ({open}) => {
                         <br /><sup className="small">Version {app.version}</sup>
                     </Card.Header>
                     <Card.Header id="version-check-header">
-                        <Spinner animation="border" variant="dark" size="sm" 
+                        <Spinner animation="border" variant="dark" size="sm"
                             className={`${isLastVersion === null ? "" : "hidden"}`}
                         />{' '}
                         <GoCheck
