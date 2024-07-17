@@ -1,18 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react'
+
+import { useState, useEffect, useRef } from 'react'
 import Collapse from 'react-bootstrap/Collapse'
 import Card from 'react-bootstrap/Card'
 import Spinner from 'react-bootstrap/Spinner'
-import { GoCheck } from 'react-icons/go'
+import { FaCheck as CheckIcon } from 'react-icons/fa6'
 
-const About = ({open}) => {
+
+type AboutProps = {
+    open: boolean,
+}
+
+
+const About = ({open}: AboutProps) => {
 
     const app = {
         name: "Multi-Timer",
-        version: "1.2.2",
-        node: "16.13.0",
-        electron: "15.3.0",
-        react: "16.13.1",
-        bootstrap: "4.6.0",
+        version: "2.0.0",
+        node: "20.14.0",
+        electron: "31.1.0",
+        react: "18.3.1",
+        typescript: "4.5.4",
+        bootstrap: "5.3.3",
     }
 
     const [isLastVersion, setIsLastVersion] = useState(null);
@@ -21,7 +29,7 @@ const About = ({open}) => {
 
     const fetchReleases = async () => {
         try {
-            const res = await fetch('https://tomilenko.tk/download/releases.json');
+            const res = await fetch('https://ihortom.github.io/download/releases.json');
 
             if (res.ok) {
                 return await res.json();
@@ -44,12 +52,22 @@ const About = ({open}) => {
         else {
             if (lastVersion.current !== null) {
                 versionStatus.innerHTML = 'Version ' + lastVersion.current.version +
-                    ' is availble. <a target="_blank" class="open-externally" href="' +
+                    ' is availble. <a target="_blank" href="' +
                     lastVersion.current.url + '">Download</a>';
             }
-            window.electron.configureExternalLinks();
         }
-    }, [isLastVersion, lastVersion]);
+    }, [isLastVersion, lastVersion])
+
+    useEffect(() => {
+        const timersBlock = document.getElementById("timers");
+        if (timersBlock !== null)
+            open ? timersBlock.style.display = "none" : timersBlock.style.display = "block";
+
+        const alertBlock = document.getElementById("alert");
+        if (alertBlock !== null)
+            open ? alertBlock.style.display = "none" : alertBlock.style.display = "block";
+        }, [open]
+    )
 
     return (
         <Collapse in={open}
@@ -93,25 +111,25 @@ const About = ({open}) => {
                     </Card.Header>
                     <Card.Header id="version-check-header">
                         <Spinner animation="border" variant="dark" size="sm"
-                            className={`${isLastVersion === null ? "" : "hidden"}`}
+                            className={`${isLastVersion === null ? "" : "d-none"}`}
                         />{' '}
-                        <GoCheck
+                        <CheckIcon
                             className={`text-success ${isLastVersion ? "visible" : "hidden"}`}
                         />{' '}
                         <span id="version-check">Checking for updates...</span>
                     </Card.Header>
                     <Card.Body>
-                    <p>Built with Electron framework and powered by React and Bootstrap.</p>
+                    <p>Built with Electron framework and powered by React, Typescript, and Bootstrap.</p>
                     <p>
                         Used modules are node {app.node},<br />
                         Electron {app.electron},<br />
                         React {app.react},<br />
+                        Typescript {app.typescript},<br />
                         and Bootstrap {app.bootstrap}.
                     </p>
                     </Card.Body>
-                    <Card.Footer className="text-muted smaller">Copyright &copy; 2021 Ihor Tomilenko</Card.Footer>
+                    <Card.Footer className="text-muted smaller">Copyright &copy; 2024 Ihor Tomilenko</Card.Footer>
                 </Card>
-                <hr />
             </section>
         </Collapse>
     )

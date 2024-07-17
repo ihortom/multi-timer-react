@@ -1,18 +1,22 @@
-@import "bootstrap/bootstrap.min.css";
+@import 'bootstrap/scss/bootstrap';
 
 $menu-button-color-active: #17a2b8;
+$timer-width: 496px;
+$timer-note-width: 462px;
 $timer-color: #f8f9fa;
 $timer-border: #17a2b8;
 $timer-control-form-height: 34px;
+$toggle-switch-size: 1.4rem;
 
 body {
-    text-align: center;
+    width: $timer-width;
+    padding: .5rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 #title {
-    margin-top: .5rem;
-    margin-bottom: 0;
-    line-height: 1;
+    margin: 0;
+    text-align: center;
     user-select: none;
     -webkit-user-select: none;
     -webkit-app-region: drag;
@@ -20,13 +24,12 @@ body {
 
 .App {
     padding: 10px;
-    width: 496px;
 }
 
 .menu {
+    margin: auto;
     button.btn {
-        padding: .1rem 1.2rem;
-        width: 4rem;
+        padding: 0rem 1.2rem 0.3rem;
         &.btn-light {
             border: 1px solid $menu-button-color-active;
             color: $menu-button-color-active;
@@ -47,6 +50,9 @@ body {
             }
         }
     }
+    svg {
+        height: 1.2rem;
+    }
 }
 
 .alert {
@@ -55,48 +61,51 @@ body {
 
 .timer {
     width: 100%;
-    margin: 10px auto;
     background-color: $timer-color;
     border: 1px solid #17a2b8;
     border-radius: .3rem;
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.6rem;
     .timer-note {
         position: absolute;
         height: 90px;
-        width: 458px;
+        width: $timer-note-width;
         background-color: $timer-color;
         z-index: 100;
         h6 {
             margin-bottom: .4rem;
-            .name, .close, .trash    {
+            .name, .close, .trash, .book   {
                 display: block;
                 float: right;
                 padding-bottom: 5px;
             }
             .name {
-                width: 320px;
+                width: 286px;
                 text-align: center;
             }
-            .close, .trash {
-                margin: -5px 0 0 2px;
+            .close, .trash, .book {
+                margin: -5px 0 3px 2px;
                 cursor: pointer;
-                padding: 0 5px;
+                padding: 0 5px 2px;
                 color: #212529;
                 background-color: #f8f9fa;
                 &:hover {
                     background-color: #e2e6ea;
                     border-color: #dae0e5;
                 }
-                svg {
-                    vertical-align: text-bottom !important;
-                }
             }
         }
-        textarea {
+        textarea, div.notebook {
             font-size: .8rem;
-            height: 62px;
-            width: 456px;
+            height: 64px;
+            width: 462px;
             resize: none;
+        }
+        div.notebook {
+            margin: 0;
+            border: #dee2e6 1px solid;
+            padding: 2px;
+            display: inline-block;
+            overflow: auto;
         }
     }
 
@@ -138,16 +147,20 @@ body {
         }
         .bell {
             display: block;
-            padding: 5px 70px 5px 10px;
-            font-size: 1rem;
+            padding: 7px 70px 5px 10px;
             float: right;
             color: $timer-color;
+            svg {
+                width: 1.2rem;
+                height: 1.2rem;
+            }
         }
         .bell.active {
             color: #28a745;
             svg:hover {
                 color: #2c9142;
-                font-size: 1.1rem;
+                width: 1.3rem;
+                height: 1.3rem;
             }
         }
         .bell.recursive {
@@ -188,6 +201,9 @@ body {
                     background-color: #e9ecef;
                     border: 1px solid #ced4da;
                 }
+                .dropdown-toggle {
+                    padding: 4px;
+                }
                 .dropdown-menu.show {
                     min-width: 1rem;
                     width: 60px !important;
@@ -205,6 +221,7 @@ body {
         height: 1px;
         margin: 10px 0;
     }
+
     /* Time Control Pannel */
     .timer-control, .clock {
         .input-group-text {
@@ -217,7 +234,7 @@ body {
             height: $timer-control-form-height;
         }
         .btn-group {
-            margin-left: 10px;
+            margin-left: auto;
             height: $timer-control-form-height;
             .btn {
                 box-shadow: 0 0 0 0;
@@ -240,14 +257,6 @@ body {
             }
             .btn-light, .btn-warning, .btn-info {
                 border-color: #6c757d;
-            }
-            .btn-light:focus{
-                _background-color: #0d6efd;
-                _border-color: #0d6efd;
-            }
-            .btn-light:active {
-                _background-color: #0d6efd;
-                _border-color: #0d6efd;
             }
             .btn-light:hover {
                 background-color: #e9ecef;
@@ -278,62 +287,14 @@ body {
     background-color: cornflowerblue;
 }
 
-/* Switch */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 36px;
-    height: 20px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: $menu-button-color-active;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-
-input:checked + .slider:before {
-    -webkit-transform: translateX(16px);
-    -ms-transform: translateX(16px);
-    transform: translateX(16px);
-}
-
 #settings .card {
     margin-bottom: .75rem;
-}
-
-/* Rounded sliders */
-.slider.round {
-    border-radius: 16px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
+    .left-value {
+      text-align: right;
+    }
+    .right-value {
+      text-align: left;
+    }
 }
 
 #about {
@@ -375,7 +336,7 @@ input:checked + .slider:before {
 }
 
 .small {
-    font-size: 60%;
+    font-size: 70% !important;
     font-weight: 200;
 }
 
@@ -392,6 +353,98 @@ input:checked + .slider:before {
     display: none;
 }
 
+.visible {
+    display: inline-block;
+}
+
 #version-check {
     font-size: .9rem;
+}
+
+// ToggleSwitch
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;  -moz-user-select: none;
+    -ms-user-select: none;
+    text-align: left;
+    &-checkbox {
+        display: none;
+    }
+    &-label {
+        display: block;
+        overflow: hidden;
+        cursor: pointer;
+        border: 0 solid $menu-button-color-active;
+        border-radius: 20px;
+        margin: 0;
+    }
+    &-inner {
+        display: block;
+        width: 200%;
+        margin-left: -100%;
+        transition: margin 0.3s ease-in 0s;
+        &:before,
+        &:after {
+            display: block;
+            float: left;
+            width: 50%;
+            height: $toggle-switch-size;
+            padding: 0;
+            line-height: $toggle-switch-size;
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+        &:before {
+            content: "";
+            text-transform: uppercase;
+            padding-left: 10px;
+            background-color: $menu-button-color-active;
+            color: #fff;
+        }
+    }
+    &-disabled {
+        background-color: #ddd;
+        cursor: not-allowed;
+        &:before {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    }
+    &-inner:after {
+        content: "";
+        text-transform: uppercase;
+        padding-right: 10px;
+        background-color: $menu-button-color-active;
+        color: #fff;
+        text-align: right;
+    }
+    &-switch {
+        display: block;
+        width: 24px;
+        margin: 2px;
+        background: #fff;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        border: 0 solid $menu-button-color-active;
+        border-radius: 20px;
+        transition: all 0.3s ease-in 0s;
+    }
+    &-checkbox:checked + &-label {
+        .toggle-switch-inner {
+            margin-left: 0;
+        }
+        .toggle-switch-switch {
+            right: 0px;
+        }
+    }
 }

@@ -1,18 +1,73 @@
-import React, { useState, useEffect, useRef } from 'react'
-import ProgressBar from 'react-bootstrap/ProgressBar'
-import TimeButtons from './TimeButtons'
-import TimerControl from './TimerControl'
-import Note from './Note'
-import Clock from './Clock'
-import { GoBell } from 'react-icons/go';
+import { useState, useEffect, useRef } from 'react';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import TimeButtons from './TimeButtons';
+import TimerControl from './TimerControl';
+import Note from './Note';
+import Clock from './Clock';
+import { FaBell as BellIcon } from 'react-icons/fa6';
+import media from '../../assets/default.mp3';
 
-const Timer = ({timer, onDelete, onUp, onDown,
-                onDragOver, onDrop, onDragEnd, onDragLeave, onDragStart,
-                addNote, updateName, settings}) => {
 
-    const [time, setTime] = useState({
+type Preferences = {
+    longFormat: boolean,
+    duodecimalClock: boolean,
+    soundAlarm: boolean,
+}
+
+type TimerStateProps = {
+    id?: string,
+    name: string,
+    note: string,
+    alarm: boolean,
+    dragged: boolean,
+    visible: boolean
+}
+
+type TimerProps = {
+    timer: TimerStateProps,
+    events: {
+        onDelete: (id: string) => void, 
+        onUp: (id: string) => void, 
+        onDown: (id: string) => void,
+        onDragOver: (id: string, e: React.DragEvent) => void, 
+        onDrop: (id: string, e: React.DragEvent) => void, 
+        onDragEnd: (id: string, e: React.DragEvent) => void, 
+        onDragLeave: (id: string, e: React.DragEvent) => void, 
+        onDragStart: (id: string, e: React.DragEvent) => void,
+        addNote: (id: string, note: string) => void, 
+        updateName: (id: string, name: string) => void, 
+    },
+    settings: Preferences
+}
+
+type TimeProps = {
+    timerId: string,
+    time: number,
+    init: number,
+    new: boolean,
+    active: boolean,
+    recursive: boolean,
+}
+
+
+const Timer = ({timer, events, settings}: TimerProps) => {
+
+    const {
+            onDelete, 
+            onUp, 
+            onDown, 
+            onDragOver, 
+            onDrop, 
+            onDragEnd, 
+            onDragLeave, 
+            onDragStart, 
+            addNote, 
+            updateName
+    } = events;
+
+    const [time, setTime] = useState<TimeProps>({
         timerId: timer.id,
-        time: 0, init: 0,   // seconds (current and initial)
+        time: 0, init: 0,   // seconds (current, initial)
         new: true,          // state
         active: false,      // alarm on
         recursive: false,   // reoccuring countdown
@@ -24,9 +79,46 @@ const Timer = ({timer, onDelete, onUp, onDown,
         setOpen(!noteOpen);
     }
 
+    const [readMode, setReadMode] = useState(false)
+
+    const notebookElement = useRef(null);
+
+    const readNote = () => {
+
+        const thisNote = document.getElementById(`note-text-${timer.id}`) as HTMLElement;
+
+        if (readMode) {
+            thisNote.style.display = 'inline-block';
+            (thisNote as HTMLTextAreaElement).innerText = timer.note;
+            notebookElement.current?.remove();
+        }
+        else {
+            const parser = new DOMParser();
+            const noteBits: string[] = timer.note.replace(/\n/g, "<br> ").split(' ');
+            const divBits: string[] = [];
+            for (const i of noteBits)
+                i.startsWith('http') ? 
+                divBits.push(`<a href="${i}" target="_blank">${i}</a>`) :
+                i.startsWith('www.') ?
+                divBits.push(`<a href="http://${i}" target="_blank">${i}</a>`) :
+                divBits.push(i);
+            const note: string = divBits.join(' ');
+            const notebook = parser.parseFromString(note, "text/html").body;
+            thisNote.style.display = 'none';
+            const thisTimer = document.getElementById(`note-${timer.id}`) as HTMLElement;
+            const thisNotebook = document.createElement('div');
+            thisNotebook.setAttribute('id', `note-book-${timer.id}`);
+            thisNotebook.setAttribute('class', 'notebook');
+            notebookElement.current = thisNotebook;
+            thisNotebook.innerHTML = notebook.innerHTML;
+            thisTimer.appendChild(thisNotebook);
+        }
+        setReadMode(!readMode);
+    }
+
     // Clock
     const [clockOpen, setClockVisibility] = useState(false);
-    const [clock, setClock] = useState(new Date(0));
+    const [clock, setClock] = useState<Date>(new Date(0));
 
     const showClock = () => {
         setClockVisibility(!clockOpen);
@@ -35,11 +127,11 @@ const Timer = ({timer, onDelete, onUp, onDown,
     const hoursElement = useRef(null);
     const minutesElement = useRef(null);
 
-    const setHoursElement = (element) => {
+    const setHoursElement = (element: HTMLInputElement) => {
         hoursElement.current = element;
     }
 
-    const setMinutesElement = (element) => {
+    const setMinutesElement = (element: HTMLInputElement) => {
         minutesElement.current = element;
     }
 
@@ -54,19 +146,19 @@ const Timer = ({timer, onDelete, onUp, onDown,
         }
     }
 
-    const getTime = (clockTime) => {
+    const getTime = (clockTime: Date) => {
         if (!time.time) {
             resetTime();
         }
-        const now = new Date();
+        const now: Date = new Date();
         if (clockTime > now) {
             setClock(clockTime);
-            const diff = parseInt((clockTime - now) / 1000);
+            const diff = Math.floor((clockTime.getTime() - now.getTime()) / 1000);
             setTime({...time, time: diff, init: diff, new: false, active: false});
         }
     }
 
-    const timeOff = (seconds) => {
+    const timeOff = (seconds: number) => {
         const now = new Date();
         const then = new Date(now.setSeconds(seconds));
         setClock(then);
@@ -75,7 +167,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
     const notifications = useRef([]);
 
     // Countdown
-    const tick = (interval) => {
+    const tick = (interval: NodeJS.Timeout) => {
         let t = time.time + 1;
 
         if (t === 1 && time.recursive) {
@@ -95,8 +187,8 @@ const Timer = ({timer, onDelete, onUp, onDown,
             const timerName = timer.name.length > 0 ? timer.name : "Timer";
 
             if (settings.soundAlarm) {
-                const x = window.document.createElement("AUDIO");
-                x.setAttribute("src","assets/default.mp3");
+                const x = window.document.createElement("AUDIO") as HTMLMediaElement;
+                x.setAttribute("src", media);
                 x.play();
             }
 
@@ -121,7 +213,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
     }
 
     useEffect(() => {
-        let interval = null;
+        let interval: NodeJS.Timeout = null;
         if (time.time || time.init) {
             interval = setInterval(() => {
                 tick(interval);
@@ -134,7 +226,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
     }, [time]);
 
     // Wind time up by given seconds
-    const windTimeUp = (seconds) => {
+    const windTimeUp = (seconds: number) => {
         if (time.active && !time.new) {
             window.electron.updateBadge(-1);
         }
@@ -155,7 +247,7 @@ const Timer = ({timer, onDelete, onUp, onDown,
     }
 
     // Silence Alarm
-    const silenceAlarm = (element) => {
+    const silenceAlarm = (element: HTMLElement) => {
         if (time.active && !time.new && !time.recursive) {
             window.electron.updateBadge(-1);
         }
@@ -180,10 +272,10 @@ const Timer = ({timer, onDelete, onUp, onDown,
         else return ""
     }
 
-    const getTimeAsString = (seconds) => {
-        const h = parseInt(seconds / (60 * 60));
-        const m = parseInt((seconds/60 - (h * 60)));
-        const s = seconds - (h * 60 * 60) - m * 60;
+    const getTimeAsString = (seconds: number): string => {
+        const h: number = Math.floor(seconds / (60 * 60));
+        const m: number = Math.floor((seconds/60 - (h * 60)));
+        const s: number = seconds - (h * 60 * 60) - m * 60;
         const t = {
             h: h < 10 ? '0' + h.toString() : h.toString(),
             m: m < 10 ? '0' + m.toString() : m.toString(),
@@ -236,7 +328,15 @@ const Timer = ({timer, onDelete, onUp, onDown,
             onDragEnd={(e) => onDragEnd(timer.id, e)}
             onDragLeave={(e) => onDragLeave(timer.id, e)}
         >
-            <Note open={noteOpen} openNote={openNote} timer={timer} time={getTimeAsString(time.time)} addNote={addNote} />
+            <Note 
+                open={noteOpen} 
+                openNote={openNote} 
+                timer={timer} 
+                time={getTimeAsString(time.time)} 
+                readMode={readMode}
+                readNote={readNote}
+                addNote={addNote} 
+            />
             <div className={`time-pannel${settings.longFormat ? " long" : " short"}`}>
                 <Clock open={clockOpen} timerId={timer.id} time={clock} countdown={time.time}
                     duodecimalClock={settings.duodecimalClock} getTime={getTime}
@@ -247,10 +347,12 @@ const Timer = ({timer, onDelete, onUp, onDown,
                 </div>
                 <TimeButtons onWind={windTimeUp} showClock={showClock} clockOpen={clockOpen} timerId={timer.id}/>
                 <span className={`bell${getBell()}`}>
-                    <GoBell onClick={(e) => silenceAlarm(e.target.closest('span.bell'))} />
+                    <BellIcon
+                        onClick={(e) => silenceAlarm((e.target as Element).closest('span.bell'))} 
+                    />
                 </span>
             </div>
-            <ProgressBar now={`${time.init > 0 ? time.time/time.init*100: 0}`} />
+            <ProgressBar now={time.init > 0 ? time.time/time.init*100: 0} />
             <div className="timer-control-pannel">
                 <TimerControl timer={timer} time={time}
                     onDelete={onDelete} onDown={onDown} onUp={onUp}

@@ -1,18 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Collapse from 'react-bootstrap/Collapse'
 import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
+import { GoClock as ClockIcon } from 'react-icons/go'
 
-import { GoClock } from 'react-icons/go'
+
+type ClockProps = {
+    open: boolean,
+    timerId: string,
+    time: Date,
+    countdown: number,
+    duodecimalClock: boolean,
+    getTime: (time: Date) => void,
+    setHoursElement: (element: HTMLInputElement) => void,
+    setMinutesElement: (element: HTMLInputElement) => void,
+}
+
 
 const Clock = ({open, timerId, time, countdown, duodecimalClock,
-                getTime, setHoursElement, setMinutesElement}) => {
+                getTime, setHoursElement, setMinutesElement}: ClockProps) => {
 
     const active = countdown > 0 ? true : false;
 
-    const [clockFormat, setFormat] = useState(() => {
+    const [clockFormat, setClockFormat] = useState(() => {
         const current = new Date();
         const duoType = current.getHours() > 12 ? 'PM' : 'AM';
         return duodecimalClock ? duoType : '24H';
@@ -21,21 +33,21 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
     useEffect(() => {
         const current = new Date();
         const duoType = current.getHours() > 12 ? 'PM' : 'AM';
-        setFormat(duodecimalClock ? duoType : '24H');
+        setClockFormat(duodecimalClock ? duoType : '24H');
     }, [duodecimalClock]);
 
     const [clockTime, setTime] = useState(time);
 
-    const handleSelect = (e) => {
-        setFormat(e);
+    const handleSelect = (e: string) => {
+        setClockFormat(e);
     }
 
     useEffect(() => {
-        const hrs = document.querySelector(`#clock-${timerId} .hours`);
+        const hrs = document.querySelector(`#clock-${timerId} .hours`) as HTMLInputElement;
         validateHours(hrs);
     }, [clockFormat]);
 
-    const validateHours = (element) => {
+    const validateHours = (element: HTMLInputElement) => {
         const now = new Date();
         if (element.value == '') {
             element.className = "hours form-control";
@@ -43,7 +55,9 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
         }
         else {
             const hours = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
-            const minutes = /^(\d+)$/.test(element.nextElementSibling.value) ? parseInt(element.nextElementSibling.value) : 0
+            const minutes = /^(\d+)$/
+                .test((element.nextElementSibling as HTMLInputElement).value) ? 
+                parseInt((element.nextElementSibling as HTMLInputElement).value) : 0
 
             if (clockFormat === '24H') {
                 if (hours < 0 || hours > 23 || isNaN(hours)) {
@@ -58,7 +72,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                     setTime(now)
                     element.className = "hours form-control";
                     if (hours > 9 || element.value.length >= 2) {
-                        element.nextElementSibling.focus();
+                        (element.nextElementSibling as HTMLInputElement).focus();
                     }
                     return true
                 }
@@ -84,7 +98,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                     }
                     element.className = "hours form-control";
                     if (hours > 9 || element.value.length >= 2) {
-                        element.nextElementSibling.focus();
+                        (element.nextElementSibling as HTMLInputElement).focus();
                     }
                     return true
                 }
@@ -92,7 +106,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
         }
     }
 
-    const validateMinutes = (element) => {
+    const validateMinutes = (element: HTMLInputElement) => {
         const now = new Date();
         if (element.value == '') {
             now.setHours(clockTime.getHours());
@@ -110,8 +124,10 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                 return false
             }
             else {
-                const hours = /^(\d+)$/.test(element.previousElementSibling.value) ? parseInt(element.previousElementSibling.value) : 0
-                now.setHours(hours);
+                const hours = /^(\d+)$/
+                    .test((element.previousElementSibling as HTMLInputElement).value) ? 
+                    parseInt((element.previousElementSibling as HTMLInputElement).value) : 0
+                clockFormat === '24H' || clockFormat == 'AM' ? now.setHours(hours) : now.setHours(hours + 12)
                 now.setMinutes(minutes);
                 now.setSeconds(0);
                 setTime(now);
@@ -121,7 +137,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
         }
     }
 
-    const pretify = (element) => {
+    const pretify = (element: HTMLInputElement) => {
         const value = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
         if (!isNaN(value)) {
             element.value = value >= 10 ? value.toString() :
@@ -130,8 +146,8 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
     }
 
     useEffect(() => {
-        const hrs = document.querySelector(`#clock-${timerId} .hours`);
-        const min = document.querySelector(`#clock-${timerId} .minutes`);
+        const hrs = document.querySelector(`#clock-${timerId} .hours`) as HTMLInputElement;
+        const min = document.querySelector(`#clock-${timerId} .minutes`) as HTMLInputElement;
 
         if (open) {   // clock opens
             setTime(time);
@@ -142,19 +158,19 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
             }
             else {
                 let hours = time.getHours();
-                let minutes = time.getMinutes();
+                const minutes = time.getMinutes();
                 if (clockFormat !== '24H') {
                     if (hours > 12) {
                         hours = time.getHours() - 12;
-                        setFormat('PM');
+                        setClockFormat('PM');
                     }
                     else {
-                        setFormat('AM');
+                        setClockFormat('AM');
                     }
                 }
 
-                hrs.value = hours < 10 ? '0' + hours : hours;
-                min.value = minutes < 10 ? '0' + minutes : minutes;
+                hrs.value = hours < 10 ? '0' + hours : hours.toString();
+                min.value = minutes < 10 ? '0' + minutes : minutes.toString();
             }
         }
         else {      // clock closes
@@ -168,8 +184,8 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
             }
             else if (!active) {     // clock set previous days or time is ealier than current time
                 const d = new Date();
-                const clockTimeStr = clockTime.toTimeString().substr(0,8);
-                const curentTimeStr = d.toTimeString().substr(0,8);
+                const clockTimeStr = clockTime.toTimeString().slice(0,8);
+                const curentTimeStr = d.toTimeString().slice(0,8);
                 if (clockTimeStr > curentTimeStr) {
                     getTime(new Date(clockTime.setDate(d.getDate())));
                 }
@@ -181,34 +197,32 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
     }, [open]);
 
     return (
-        <Collapse in={open} dimension="width" timeout={100}
+        <Collapse in={open} dimension="width" timeout={0}
             onEntered={() => {
-                const hoursElement = document.querySelector('#' + `clock-${timerId}` + ' .hours');
-                const minutesElement = document.querySelector('#' + `clock-${timerId}` + ' .minutes');
-                hoursElement.focus();
+                const hoursElement = document.querySelector('#' + `clock-${timerId}` + ' .hours') as HTMLInputElement;
+                const minutesElement = document.querySelector('#' + `clock-${timerId}` + ' .minutes') as HTMLInputElement;
+                (hoursElement as HTMLInputElement).focus();
                 setHoursElement(hoursElement);
                 setMinutesElement(minutesElement);
             }}
         >
             <InputGroup className="clock" size="sm" id={`clock-${timerId}`}>
-                <InputGroup.Prepend>
-                    <InputGroup.Text><GoClock /></InputGroup.Text>
-                </InputGroup.Prepend>
+                <InputGroup.Text><ClockIcon /></InputGroup.Text>
                 <FormControl className="hours" placeholder="H" disabled={active}
                     type="text"
                     onChange={(e) => {
                             e.preventDefault();
-                            setHoursElement(e.target);
-                            setMinutesElement(e.target.nextElementSibling);
+                            setHoursElement(e.target as HTMLInputElement);
+                            setMinutesElement(e.target.nextElementSibling as HTMLInputElement);
                     }}
                     onBlur={(e) => {
-                        pretify(e.target);
-                        pretify(e.target.nextElementSibling);
-                        e.target.nextElementSibling.select();
+                        pretify(e.target as HTMLInputElement);
+                        pretify(e.target.nextElementSibling as HTMLInputElement);
+                        (e.target.nextElementSibling as HTMLInputElement).select();
                     }}
                     onKeyUp={(e) => {
-                        if (validateHours(e.target) && e.keyCode === 13) {
-                            const clockBtn = document.querySelector(`#clock-button-${timerId}`);
+                        if (validateHours(e.target as HTMLInputElement) && e.key === 'Enter') {
+                            const clockBtn = document.querySelector(`#clock-button-${timerId}`) as HTMLElement;
                             clockBtn.click();
                         }
                     }}
@@ -217,17 +231,17 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                     type="text"
                     onChange={(e) => {
                             e.preventDefault();
-                            setMinutesElement(e.target);
-                            setHoursElement(e.target.previousElementSibling);
+                            setMinutesElement(e.target as HTMLInputElement);
+                            setHoursElement(e.target.previousElementSibling as HTMLInputElement);
                     }}
                     onBlur={(e) => {
-                        pretify(e.target);
-                        pretify(e.target.previousElementSibling);
+                        pretify(e.target as HTMLInputElement);
+                        pretify(e.target.previousElementSibling as HTMLInputElement);
                     }}
                     onKeyUp={(e) => {
-                        if (validateMinutes(e.target) && e.keyCode === 13) {
+                        if (validateMinutes(e.target as HTMLInputElement) && e.key === 'Enter') {
                             const clockBtn = document.querySelector(`#clock-button-${timerId}`);
-                            clockBtn.click();
+                            (clockBtn as HTMLElement).click();
                         }
                     }}
                 />
