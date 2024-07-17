@@ -1,8 +1,16 @@
-import React from 'react';
 import Button from 'react-bootstrap/Button';
-import { GoClock } from 'react-icons/go';
+import { FaRegClock as ClockIcon } from 'react-icons/fa6'
 
-const TimeButtons = ({onWind, showClock, clockOpen, timerId}) => {
+
+type TimeButtonsProps = {
+    onWind: (time: number) => void,
+    showClock: () => void,
+    clockOpen: boolean,
+    timerId: string,
+}
+
+
+const TimeButtons = ({onWind, showClock, clockOpen, timerId}: TimeButtonsProps) => {
 
     return (
         <div className="time-buttons">
@@ -10,7 +18,7 @@ const TimeButtons = ({onWind, showClock, clockOpen, timerId}) => {
                 id={`clock-button-${timerId}`}
                 aria-controls={`clock-${timerId}`}
                 aria-expanded={clockOpen}
-                onClick={() => showClock()}><GoClock /></Button>
+                onClick={() => showClock()}><ClockIcon /></Button>
             <Button className="rounded-circle" variant={`${clockOpen ? "outline-primary" : "primary"}`}
                 disabled={clockOpen} onClick={() => onWind(1*60)}>1</Button>
             <Button className="rounded-circle" variant={`${clockOpen ? "outline-primary" : "primary"}`}
