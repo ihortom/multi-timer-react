@@ -15,7 +15,7 @@ type NoteProps = {
         note: string,
         alarm: boolean,
         dragged: boolean,
-        visible: boolean
+        visible: boolean,
     },
     time: string,
     open: boolean,
@@ -23,7 +23,7 @@ type NoteProps = {
     openNote: () => void,
     addNote: (id: string, note: string) => void,
     readNote: () => void,
-}
+};
 
 
 const Note = ({timer, time, open, readMode, openNote, readNote, addNote}: NoteProps) => {
@@ -61,7 +61,7 @@ const Note = ({timer, time, open, readMode, openNote, readNote, addNote}: NotePr
                 </textarea>
             </div>
         </Collapse>
-    )
-}
+    );
+};
 
-export default Note
+export default Note;

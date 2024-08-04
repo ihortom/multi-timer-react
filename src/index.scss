@@ -295,6 +295,9 @@ body {
     .right-value {
       text-align: left;
     }
+    svg {
+        height: 0.8rem;
+    }
 }
 
 #about {
@@ -359,6 +362,14 @@ body {
 
 #version-check {
     font-size: .9rem;
+}
+
+.filler.row {
+    height: 1rem;
+}
+
+#sound-alarm-media {
+    width: 160px;
 }
 
 // ToggleSwitch

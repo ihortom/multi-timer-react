@@ -15,4 +15,4 @@ contextBridge.exposeInMainWorld('electron', {
     updateBadge: (data: number) => {
         ipcRenderer.send('badge', data);
     }
-})
+});

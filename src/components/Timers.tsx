@@ -3,21 +3,6 @@ import Timer from './Timer';
 import { Stack } from 'react-bootstrap';
 
 
-type Preferences = {
-    longFormat: boolean,
-    duodecimalClock: boolean,
-    soundAlarm: boolean
-}
-
-type TimerStateProps = {
-    id?: string,
-    name: string,
-    note: string,
-    alarm: boolean,
-    dragged: boolean,
-    visible: boolean
-}
-
 type TimersProps = {
     timers: TimerStateProps[],
     events: {
@@ -30,10 +15,10 @@ type TimersProps = {
         onDragLeave: (id: string, e: React.DragEvent) => void, 
         onDragStart: (id: string, e: React.DragEvent) => void,
         addNote: (id: string, note: string) => void, 
-        updateName: (id: string, name: string) => void
+        updateName: (id: string, name: string) => void,
     },
-    settings: Preferences
-}
+    settings: Preferences,
+};
 
 
 const Timers = (props: TimersProps) => {
@@ -55,7 +40,7 @@ const Timers = (props: TimersProps) => {
                 })}
             </Stack>
         </section>
-    )
-}
+    );
+};
 
-export default Timers
+export default Timers;

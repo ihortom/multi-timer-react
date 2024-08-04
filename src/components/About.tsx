@@ -1,26 +1,27 @@
 
-import { useState, useEffect, useRef } from 'react'
-import Collapse from 'react-bootstrap/Collapse'
-import Card from 'react-bootstrap/Card'
-import Spinner from 'react-bootstrap/Spinner'
-import { FaCheck as CheckIcon } from 'react-icons/fa6'
+import { useState, useEffect, useRef } from 'react';
+import Collapse from 'react-bootstrap/Collapse';
+import Card from 'react-bootstrap/Card';
+import Spinner from 'react-bootstrap/Spinner';
+import { FaCheck as CheckIcon } from 'react-icons/fa6';
 
 
 type AboutProps = {
     open: boolean,
-}
+};
 
 
 const About = ({open}: AboutProps) => {
 
     const app = {
         name: "Multi-Timer",
-        version: "2.0.0",
+        version: "2.1.0",
         node: "20.14.0",
         electron: "31.1.0",
         react: "18.3.1",
         typescript: "4.5.4",
         bootstrap: "5.3.3",
+        year: 2024,
     }
 
     const [isLastVersion, setIsLastVersion] = useState(null);
@@ -56,31 +57,39 @@ const About = ({open}: AboutProps) => {
                     lastVersion.current.url + '">Download</a>';
             }
         }
-    }, [isLastVersion, lastVersion])
-
-    useEffect(() => {
-        const timersBlock = document.getElementById("timers");
-        if (timersBlock !== null)
-            open ? timersBlock.style.display = "none" : timersBlock.style.display = "block";
-
-        const alertBlock = document.getElementById("alert");
-        if (alertBlock !== null)
-            open ? alertBlock.style.display = "none" : alertBlock.style.display = "block";
-        }, [open]
-    )
+    }, [isLastVersion, lastVersion]);
 
     return (
-        <Collapse in={open}
+        <Collapse 
+            in={open}
+            onEnter={() => {
+                const timersBlock = document.getElementById("timers");
+                if (timersBlock !== null && open)
+                    timersBlock.style.display = "none";
+
+                const alertBlock = document.getElementById("alert");
+                if (alertBlock !== null && open)
+                    alertBlock.style.display = "none";
+            }}
+            onExited={() => {
+                const timersBlock = document.getElementById("timers");
+                if (timersBlock !== null && !open)
+                    timersBlock.style.display = "block";
+
+                const alertBlock = document.getElementById("alert");
+                if (alertBlock !== null && !open)
+                    alertBlock.style.display = "block";
+            }}
             onEntered={async () => {
                 const data =  await fetchReleases();
 
                 if (data !== null) {
                     const releases = Object.keys(data.releases);
                     const relHashes = releases.map(i =>
-                        [i, parseInt(i.split('.')[0])*10000 + parseInt(i.split('.')[1])*100 + parseInt(i.split('.')[2]), data.releases[i]])
+                        [i, parseInt(i.split('.')[0])*10000 + parseInt(i.split('.')[1])*100 + parseInt(i.split('.')[2]), data.releases[i]]);
 
-                    const maxHash = Math.max(...relHashes.map(i => i[1]))
-                    const latestRelease = relHashes.filter(i => i[1] === maxHash)[0]
+                    const maxHash = Math.max(...relHashes.map(i => i[1]));
+                    const latestRelease = relHashes.filter(i => i[1] === maxHash)[0];
 
                     lastVersion.current = {
                         "version": latestRelease[0],
@@ -119,20 +128,22 @@ const About = ({open}: AboutProps) => {
                         <span id="version-check">Checking for updates...</span>
                     </Card.Header>
                     <Card.Body>
-                    <p>Built with Electron framework and powered by React, Typescript, and Bootstrap.</p>
+                    <p>Built with Electron framework and powered by React, TypeScript, and Bootstrap.</p>
                     <p>
                         Used modules are node {app.node},<br />
                         Electron {app.electron},<br />
                         React {app.react},<br />
-                        Typescript {app.typescript},<br />
+                        TypeScript {app.typescript},<br />
                         and Bootstrap {app.bootstrap}.
                     </p>
                     </Card.Body>
-                    <Card.Footer className="text-muted smaller">Copyright &copy; 2024 Ihor Tomilenko</Card.Footer>
+                    <Card.Footer className="text-muted smaller">
+                        Copyright &copy; {app.year} Ihor Tomilenko
+                    </Card.Footer>
                 </Card>
             </section>
         </Collapse>
-    )
-}
+    );
+};
 
-export default About
+export default About;

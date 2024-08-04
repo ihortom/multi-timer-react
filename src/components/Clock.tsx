@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
-import Collapse from 'react-bootstrap/Collapse'
-import InputGroup from 'react-bootstrap/InputGroup'
-import FormControl from 'react-bootstrap/FormControl'
-import Dropdown from 'react-bootstrap/Dropdown'
-import DropdownButton from 'react-bootstrap/DropdownButton'
-import { GoClock as ClockIcon } from 'react-icons/go'
+import { useState, useEffect } from 'react';
+import Collapse from 'react-bootstrap/Collapse';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { GoClock as ClockIcon } from 'react-icons/go';
 
 
 type ClockProps = {
@@ -16,7 +16,7 @@ type ClockProps = {
     getTime: (time: Date) => void,
     setHoursElement: (element: HTMLInputElement) => void,
     setMinutesElement: (element: HTMLInputElement) => void,
-}
+};
 
 
 const Clock = ({open, timerId, time, countdown, duodecimalClock,
@@ -40,7 +40,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
 
     const handleSelect = (e: string) => {
         setClockFormat(e);
-    }
+    };
 
     useEffect(() => {
         const hrs = document.querySelector(`#clock-${timerId} .hours`) as HTMLInputElement;
@@ -51,60 +51,60 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
         const now = new Date();
         if (element.value == '') {
             element.className = "hours form-control";
-            return true
+            return true;
         }
         else {
-            const hours = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
+            const hours = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1;
             const minutes = /^(\d+)$/
                 .test((element.nextElementSibling as HTMLInputElement).value) ? 
-                parseInt((element.nextElementSibling as HTMLInputElement).value) : 0
+                parseInt((element.nextElementSibling as HTMLInputElement).value) : 0;
 
             if (clockFormat === '24H') {
                 if (hours < 0 || hours > 23 || isNaN(hours)) {
                     setTime(new Date(0));
                     element.className = "hours form-control warning";
-                    return false
+                    return false;
                 }
                 else {
-                    now.setHours(hours)
-                    now.setMinutes(minutes)
-                    now.setSeconds(0)
-                    setTime(now)
+                    now.setHours(hours);
+                    now.setMinutes(minutes);
+                    now.setSeconds(0);
+                    setTime(now);
                     element.className = "hours form-control";
                     if (hours > 9 || element.value.length >= 2) {
                         (element.nextElementSibling as HTMLInputElement).focus();
                     }
-                    return true
+                    return true;
                 }
             }
             else {  // '12H: AM/PM'
                 if (hours < 0 || hours > 12 || isNaN(hours)) {
                     setTime(new Date(0));
                     element.className = "hours form-control warning";
-                    return false
+                    return false;
                 }
                 else {
                     if (clockFormat === 'AM') {
-                        now.setHours(hours)
-                        now.setMinutes(minutes)
-                        now.setSeconds(0)
-                        setTime(now)
+                        now.setHours(hours);
+                        now.setMinutes(minutes);
+                        now.setSeconds(0);
+                        setTime(now);
                     }
                     else {
-                        now.setHours(hours + 12)
-                        now.setMinutes(minutes)
-                        now.setSeconds(0)
-                        setTime(now)
+                        now.setHours(hours + 12);
+                        now.setMinutes(minutes);
+                        now.setSeconds(0);
+                        setTime(now);
                     }
                     element.className = "hours form-control";
                     if (hours > 9 || element.value.length >= 2) {
                         (element.nextElementSibling as HTMLInputElement).focus();
                     }
-                    return true
+                    return true;
                 }
             }
         }
-    }
+    };
 
     const validateMinutes = (element: HTMLInputElement) => {
         const now = new Date();
@@ -114,14 +114,14 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
             now.setSeconds(0);
             setTime(now);
             element.className = "hours form-control";
-            return true
+            return true;
         }
         else {
             const minutes = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
             if (minutes < 0 || minutes > 59 || isNaN(minutes)) {
                 setTime(new Date(0));
                 element.className = "minutes form-control warning";
-                return false
+                return false;
             }
             else {
                 const hours = /^(\d+)$/
@@ -132,10 +132,10 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                 now.setSeconds(0);
                 setTime(now);
                 element.className = "minutes form-control";
-                return true
+                return true;
             }
         }
-    }
+    };
 
     const pretify = (element: HTMLInputElement) => {
         const value = /^(\d+)$/.test(element.value) ? parseInt(element.value) : -1
@@ -143,7 +143,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
             element.value = value >= 10 ? value.toString() :
                               value < 0 ? '00' : '0' + value;
         }
-    }
+    };
 
     useEffect(() => {
         const hrs = document.querySelector(`#clock-${timerId} .hours`) as HTMLInputElement;
@@ -257,7 +257,7 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
                 </InputGroup>
             </InputGroup>
         </Collapse>
-    )
-}
+    );
+};
 
-export default Clock
+export default Clock;

@@ -12,50 +12,27 @@ import {
     FaInfo as InfoIcon,
     FaRegTrashCan as TrashIcon,
 } from 'react-icons/fa6';
+import { MenuItemProps } from './MenuItem';
 
-
-type Preferences = {
-    longFormat: boolean,
-    duodecimalClock: boolean,
-    soundAlarm: boolean,
-}
-
-type MenuItemProps = {
-    id: number,
-    text: JSX.Element,
-    title: string,
-    pressed: boolean,
-    togglable: boolean,
-    disabled: boolean,
-};
-
-type TimerStateProps = {
-    id?: string,
-    name: string,
-    note: string,
-    alarm: boolean,
-    dragged: boolean,
-    visible: boolean
-}
 
 type DraggableTimerProps = {
     timer?: TimerStateProps,
     clientY?: number,
     index?: number,
     status?: string
-}
+};
 
 type TargettedTimerProps = {
     timer?: TimerStateProps,
     clientY?: number,
     index?: number
-}
+};
 
 
 const App = () => {
 
     // Menu block
-    const [menuItems, setMenuItems] = useState<MenuItemProps[]>([
+    const [menuItems, setMenuItems] = useState<MenuItemProps["menuItem"][]>([
         {
             id: 1,
             text: <PlusIcon />,
@@ -159,7 +136,7 @@ const App = () => {
                             btn.id === 5 ? {...btn, pressed: false} :
                             {...btn, disabled: false}
                         )
-                )
+                );
             else
                 setMenuItems(
                     menuItems
@@ -167,7 +144,7 @@ const App = () => {
                             btn.id === 5 ? {...btn, pressed: true} :
                             {...btn, disabled: true}
                         )
-                )
+                );
         }
         else if (id === 6) {    // About
             if (menuItems[5].pressed)
@@ -177,15 +154,15 @@ const App = () => {
                             btn.id === 6 ? {...btn, pressed: false} :
                             {...btn, disabled: false}
                         )
-                )
+                );
             else
-            setMenuItems(
-                menuItems
-                    .map((btn) =>
-                        btn.id === 6 ? {...btn, pressed: true} :
-                        {...btn, disabled: true}
-                    )
-            )
+                setMenuItems(
+                    menuItems
+                        .map((btn) =>
+                            btn.id === 6 ? {...btn, pressed: true} :
+                            {...btn, disabled: true}
+                        )
+                );
         }
         else {
             setMenuItems(
@@ -193,7 +170,7 @@ const App = () => {
                     .map((btn) => 
                         btn.id === id ? {...btn, pressed: !btn.pressed} : btn
                     )
-            )
+            );
         }
     }
 
@@ -202,25 +179,30 @@ const App = () => {
             menuItems.map((btn) => btn.id === 3 && btn.pressed ?
             {...btn, pressed: false, text: <XmarkIcon />} : btn)
         );
-    }
+    };
 
     // App preferences block
-    const [preferences, setPreferences] = useState({
-        longFormat: (JSON.parse(window.localStorage.getItem('timeLong')) ||
-                                window.localStorage.getItem('timeLong') === null) ?
-                                true : // default
-                                false,
-        duodecimalClock: (JSON.parse(window.localStorage.getItem('duodecimalClock'))) ?
-                                true :
-                                false, // default
-        soundAlarm: (JSON.parse(window.localStorage.getItem('soundAlarm'))) ?
-                                true :
-                                false, // default
-    })
+    const [preferences, setPreferences] = useState<Preferences>({
+        longFormat: JSON.parse(window.localStorage.getItem('timeLong')) ?
+                            true :  // default
+                            false,
+        duodecimalClock: JSON.parse(window.localStorage.getItem('duodecimalClock')) ?
+                            true :
+                            false,  // default
+        soundAlarm: JSON.parse(window.localStorage.getItem('soundAlarm')) ?
+                            true :
+                            false,  // default
+        soundAlarmMedia: window.localStorage.getItem('soundAlarmMedia') &&
+                            window.localStorage.getItem('soundAlarmMedia') !== 'null' && 
+                            window.localStorage.getItem('soundAlarmMedia') !== 'undefined' ?
+                            window.localStorage.getItem('soundAlarmMedia') :
+                            JSON.parse(window.localStorage.getItem('soundAlarm')) ?
+                            'defaultAlarm' : null,  // default
+    });
 
     const updateSettings = (preferences: Preferences) => {
         setPreferences(preferences);
-    }
+    };
 
 
     // Timers block
@@ -235,11 +217,11 @@ const App = () => {
             dragged: false,
             visible: true,
         }]
-    )
+    );
 
-    const [draggedTimer, setDraggedTimer] = useState<DraggableTimerProps>({})
+    const [draggedTimer, setDraggedTimer] = useState<DraggableTimerProps>({});
 
-    const [targetTimer, setTargetTimer] = useState<TargettedTimerProps>({})
+    const [targetTimer, setTargetTimer] = useState<TargettedTimerProps>({});
 
     const addTimer = (timer: TimerStateProps) => {
         if (timers.length === 0)
@@ -251,7 +233,7 @@ const App = () => {
         const id = uuid();
         const newTimer = { id:id, ...timer }
         setTimers(timers.concat([newTimer]));
-    }
+    };
 
     const deleteTimer = (id: string) => {
         if (timers.length === 1)
@@ -261,7 +243,7 @@ const App = () => {
             );
 
         setTimers(timers.filter((timer) => timer.id !== id));
-    }
+    };
 
     const deleteAllTimers = () => {
         setTimers([]);
@@ -272,7 +254,7 @@ const App = () => {
             {...btn, disabled: true} :  // disable stop all, delete all, and hide indective
             btn
         ));
-    }
+    };
 
     const hideInactiveTimers = (ids: string[]) => {
         // show all timers
@@ -296,32 +278,32 @@ const App = () => {
                 btn
             ));
         }
-    }
+    };
 
     const moveTimerUp = (id: string) => {
         const indexOfThisTimer = timers.map((timer,index) => timer.id === id ? index : 0)
                                        .find(i => i)
-        if(indexOfThisTimer > 0) {
-            const thisTimer = timers[indexOfThisTimer]
-            const prevTimer = timers[indexOfThisTimer - 1]
-            const a1 = timers.slice(0, indexOfThisTimer - 1)
-            const a2 = timers.slice(indexOfThisTimer + 1, timers.length)
-            setTimers([...a1, thisTimer, prevTimer, ...a2])
+        if (indexOfThisTimer > 0) {
+            const thisTimer = timers[indexOfThisTimer];
+            const prevTimer = timers[indexOfThisTimer - 1];
+            const a1 = timers.slice(0, indexOfThisTimer - 1);
+            const a2 = timers.slice(indexOfThisTimer + 1, timers.length);
+            setTimers([...a1, thisTimer, prevTimer, ...a2]);
         }
-    }
+    };
 
     const moveTimerDown = (id: string) => {
         const i = timers.map((timer,index) => timer.id === id ? index : 0)
-                        .find(i => i)
-        const indexOfThisTimer = i ? i : 0
-        if(indexOfThisTimer < timers.length - 1) {
-            const thisTimer = timers[indexOfThisTimer]
-            const nextTimer = timers[indexOfThisTimer + 1]
-            const a1 = timers.slice(0, indexOfThisTimer)
-            const a2 = timers.slice(indexOfThisTimer + 2, timers.length)
-            setTimers([...a1, nextTimer, thisTimer, ...a2])
+                        .find(i => i);
+        const indexOfThisTimer = i ? i : 0;
+        if (indexOfThisTimer < timers.length - 1) {
+            const thisTimer = timers[indexOfThisTimer];
+            const nextTimer = timers[indexOfThisTimer + 1];
+            const a1 = timers.slice(0, indexOfThisTimer);
+            const a2 = timers.slice(indexOfThisTimer + 2, timers.length);
+            setTimers([...a1, nextTimer, thisTimer, ...a2]);
         }
-    }
+    };
 
     const dragTimerStart = (id: string, e: React.DragEvent) => {
         const i = timers.map((timer,index) => timer.id === id ? index : 0)
@@ -333,76 +315,77 @@ const App = () => {
             index: indexOfThisTimer,
             status: 'start'
         })
-        setTimers(timers.map(timer => timer.id === id ? {...timer, dragged: true} : timer))
-    }
+        setTimers(timers.map(timer => timer.id === id ? {...timer, dragged: true} : timer));
+    };
 
     const dragTimerOver = (id: string, e: React.DragEvent) => {
         e.preventDefault();
         const i = timers.map((timer,index) => timer.id === id ? index : 0)
-                        .find(i => i)
-        const indexOfThisTimer = i ? i : 0
+                        .find(i => i);
+        const indexOfThisTimer = i ? i : 0;
         // spot to be dropped on
         setTargetTimer({
             timer: timers.find(timer => timer.id === id),
             clientY: e.clientY,
             index: indexOfThisTimer
-        })
-    }
+        });
+    };
 
     const dragTimerEnd = (id: string, e: React.DragEvent) => {
         e.preventDefault();
         // if target exists then drop is missed
         // restore timers
-        setTimers(timers.map(timer => timer.dragged ? {...timer, dragged: false} : timer))
-    }
+        setTimers(timers.map(timer => timer.dragged ? {...timer, dragged: false} : timer));
+    };
 
     const dragTimerLeave = (id: string, e: React.DragEvent) => {
         e.preventDefault();
-        setTargetTimer({})
-    }
+        setTargetTimer({});
+    };
 
     const dropTimer = (id: string, e: React.DragEvent) => {
-        e.preventDefault()
+        e.preventDefault();
         if (Object.keys(targetTimer).length) {
             if (draggedTimer.index === targetTimer.index) {
                 // reset
-                setTargetTimer({})
-                setDraggedTimer({})
+                setTargetTimer({});
+                setDraggedTimer({});
             }
             else if (draggedTimer.clientY < targetTimer.clientY) { // drag down
-                const a1 = timers.slice(0, draggedTimer.index)
-                const a2 = timers.slice(draggedTimer.index + 1, targetTimer.index + 1)
-                const a3 = timers.slice(targetTimer.index + 1, timers.length)
-                setTimers([...a1, ...a2, draggedTimer.timer, ...a3])
+                const a1 = timers.slice(0, draggedTimer.index);
+                const a2 = timers.slice(draggedTimer.index + 1, targetTimer.index + 1);
+                const a3 = timers.slice(targetTimer.index + 1, timers.length);
+                setTimers([...a1, ...a2, draggedTimer.timer, ...a3]);
             }
             else {    // drag up
-                const a1 = timers.slice(0, targetTimer.index)
-                const a2 = timers.slice(targetTimer.index + 1, draggedTimer.index)
+                const a1 = timers.slice(0, targetTimer.index);
+                const a2 = timers.slice(targetTimer.index + 1, draggedTimer.index);
                 const a3 = draggedTimer.index < timers.length ?
-                    timers.slice(draggedTimer.index + 1, timers.length) : []
-                setTimers([...a1, draggedTimer.timer, ...a2, targetTimer.timer, ...a3])
+                    timers.slice(draggedTimer.index + 1, timers.length) : [];
+                setTimers([...a1, draggedTimer.timer, ...a2, targetTimer.timer, ...a3]);
             }
         }
         else {
-            setTimers(timers.concat(draggedTimer.timer))
+            setTimers(timers.concat(draggedTimer.timer));
         }
         // reset
-        setTargetTimer({})
-        setDraggedTimer({})
-    }
+        setTargetTimer({});
+        setDraggedTimer({});
+    };
 
     const addNote = (id: string, note: string) => {
-        setTimers(timers.map((timer) => timer.id === id ? {...timer, note: note} : timer))
-    }
+        setTimers(timers.map((timer) => timer.id === id ? {...timer, note: note} : timer));
+    };
 
     const updateName = (id: string, name: string) => {
-        setTimers(timers.map((timer) => timer.id === id ? {...timer, name: name} : timer))
-    }
+        setTimers(timers.map((timer) => timer.id === id ? {...timer, name: name} : timer));
+    };
 
     useEffect(() => {
         window.localStorage.setItem('timeLong', preferences.longFormat.toString());
         window.localStorage.setItem('duodecimalClock', preferences.duodecimalClock.toString());
         window.localStorage.setItem('soundAlarm', preferences.soundAlarm.toString());
+        window.localStorage.setItem('soundAlarmMedia', (new String(preferences.soundAlarmMedia)).toString());
         window.localStorage.setItem('mtTimers', JSON.stringify(timers));
     }, [preferences, timers]);
 
@@ -417,7 +400,7 @@ const App = () => {
         onDragLeave: dragTimerLeave,
         addNote: addNote,
         updateName: updateName,
-    }
+    };
 
     const menuEvents = {
         onClick: pushMenuButton,
@@ -425,7 +408,7 @@ const App = () => {
         cancelDelete: cancelDelete,
         onSettingsUpdate: updateSettings,
         onHideInactiveTimers: hideInactiveTimers,
-    }
+    };
 
     return (
         <StrictMode>
@@ -465,6 +448,6 @@ const App = () => {
             }
         </StrictMode>
     );
-}
+};
 
 export default App;
