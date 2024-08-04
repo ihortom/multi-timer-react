@@ -11,7 +11,7 @@ Visit https://ihortom.github.io for more details and to download the compiled in
 - Relative and absolute time
 - Add accompanying notes
 - Clickable URLs in note's read mode
-- Make timer reoccuring
+- Make timer recurring
 - Get notified
 - Hide inactive timers
 - Reorder timers

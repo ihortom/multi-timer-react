@@ -1,14 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import Button from 'react-bootstrap/Button'
+import { useState, useEffect } from 'react';
+import Button from 'react-bootstrap/Button';
 
 
-type Preferences = {
-    longFormat: boolean,
-    duodecimalClock: boolean,
-    soundAlarm: boolean,
-}
-
-type MenuItemProps = {
+export type MenuItemProps = {
     menuItem: {
         id: number,
         text: JSX.Element,
@@ -24,16 +18,7 @@ type MenuItemProps = {
         onSettingsUpdate: (preferences: Preferences) => void,
         onHideInactiveTimers: (ids: string[]) => void,
     }
-}
-
-type TimerStateProps = {
-    id?: string,
-    name: string,
-    note: string,
-    alarm: boolean,
-    dragged: boolean,
-    visible: boolean
-}
+};
 
 
 const MenuItem = ({menuItem, events}: MenuItemProps) => {
@@ -91,7 +76,7 @@ const MenuItem = ({menuItem, events}: MenuItemProps) => {
         >
             {menuItem.text}
         </Button>
-    )
-}
+    );
+};
 
-export default MenuItem
+export default MenuItem;

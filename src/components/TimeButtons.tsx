@@ -1,5 +1,5 @@
 import Button from 'react-bootstrap/Button';
-import { FaRegClock as ClockIcon } from 'react-icons/fa6'
+import { FaRegClock as ClockIcon } from 'react-icons/fa6';
 
 
 type TimeButtonsProps = {
@@ -7,7 +7,7 @@ type TimeButtonsProps = {
     showClock: () => void,
     clockOpen: boolean,
     timerId: string,
-}
+};
 
 
 const TimeButtons = ({onWind, showClock, clockOpen, timerId}: TimeButtonsProps) => {
@@ -34,7 +34,7 @@ const TimeButtons = ({onWind, showClock, clockOpen, timerId}: TimeButtonsProps) 
             <Button className="rounded-circle" variant={`${clockOpen ? "outline-primary" : "primary"}`}
                 disabled={clockOpen} onClick={() => onWind(60*60)}>60</Button>
         </div>
-    )
-}
+    );
+};
 
-export default TimeButtons
+export default TimeButtons;

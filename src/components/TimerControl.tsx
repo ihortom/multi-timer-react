@@ -12,27 +12,9 @@ import {
     GoX as XmarkIcon,
     GoArrowUp as ArrowUpIcon,
     GoArrowDown as ArrowDownIcon,
-    GoTrash as TrashIcon
+    GoTrash as TrashIcon,
 } from 'react-icons/go';
 
-
-type TimeProps = {
-    timerId: string,
-    time: number,
-    init: number,
-    new: boolean,
-    active: boolean,
-    recursive: boolean,
-}
-
-type TimerStateProps = {
-    id?: string,
-    name: string,
-    note: string,
-    alarm: boolean,
-    dragged: boolean,
-    visible: boolean
-}
 
 type TimerControlProps = {
     timer: TimerStateProps,
@@ -45,11 +27,11 @@ type TimerControlProps = {
     onDelete: (id: string) => void, 
     onDown: (id: string) => void,
     onUp: (id: string) => void, 
-}
+};
 
         
-const TimerControl = ({
-    timer, time, open, 
+const TimerControl = 
+    ({timer, time, open, 
     reset, makeRecursive, updateName, openNote, onDelete, onDown, onUp}: TimerControlProps) => {
 
     const [del, pressDel] = useState(false);
@@ -97,7 +79,7 @@ const TimerControl = ({
                 </ButtonGroup>
             </ButtonToolbar>
         </div>
-    )
-}
+    );
+};
 
-export default TimerControl
+export default TimerControl;

@@ -9,7 +9,7 @@ import { rendererConfig } from './webpack.renderer.config';
 
 
 const appName = 'Multi-Timer';
-const appVersion = '2.0.0';
+const appVersion = '2.1.0';
 const appCopyright = 'Copyright © 2024 Ihor Tomilenko';
 
 const config: ForgeConfig = {

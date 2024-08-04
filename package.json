@@ -1,12 +1,15 @@
 {
     "name": "multi-timer-react",
     "productName": "Multi-Timer",
-    "version": "2.0.0",
+    "version": "2.1.0",
+    "author": "Ihor Tomilenko",
+    "license": "MIT",
     "description": "Manage your time when multitasking",
+    "keywords": [],
     "main": ".webpack/main",
     "scripts": {
-        "start": "export ENV=DEV && electron-forge start",
-        "make": "electron-forge make"
+        "start": "electron-forge start",
+        "make": "NODE_ENV=production electron-forge make"
     },
     "devDependencies": {
         "@electron-forge/cli": "^7.4.0",
@@ -38,9 +41,6 @@
         "typescript": "~4.5.4",
         "url-loader": "^4.1.1"
     },
-    "keywords": [],
-    "author": "Ihor Tomilenko",
-    "license": "MIT",
     "dependencies": {
         "@types/uuid": "^10.0.0",
         "bootstrap": "^5.3.3",

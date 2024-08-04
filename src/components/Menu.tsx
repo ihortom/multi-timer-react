@@ -1,35 +1,12 @@
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import MenuItem from './MenuItem';
-import About from './About'
-import Settings from './Settings'
+import About from './About';
+import Settings from './Settings';
+import { MenuItemProps } from './MenuItem';
 
-
-type Preferences = {
-    longFormat: boolean,
-    duodecimalClock: boolean,
-    soundAlarm: boolean,
-}
-
-type MenuItemProps = {
-    id: number,
-    text: JSX.Element,
-    title: string,
-    pressed: boolean,
-    togglable: boolean,
-    disabled: boolean,
-}
-
-type TimerStateProps = {
-    id?: string,
-    name: string,
-    note: string,
-    alarm: boolean,
-    dragged: boolean,
-    visible: boolean,
-}
 
 type MenuItemsProps = {
-    menuItems: MenuItemProps[],
+    menuItems: MenuItemProps["menuItem"][],
     events: {
         onClick: (id: number) => void,
         addTimer: (timer: TimerStateProps) => void,
@@ -38,7 +15,7 @@ type MenuItemsProps = {
         onHideInactiveTimers: (ids: string[]) => void,
     },
     settings: Preferences,
-}
+};
 
 
 const Menu = (props: MenuItemsProps) => {
@@ -68,7 +45,7 @@ const Menu = (props: MenuItemsProps) => {
             />
             <About open={menuItems[5].pressed} />
         </header>
-    )
-}
+    );
+};
 
-export default Menu
+export default Menu;

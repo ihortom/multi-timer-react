@@ -1,12 +1,6 @@
 import React from "react";
 
 
-type Preferences = {
-    longFormat: boolean,
-    duodecimalClock: boolean,
-    soundAlarm: boolean,
-}
-
 type ToggleSwitchProps = {
     id: string,
     checked: boolean,
@@ -36,6 +30,13 @@ const ToggleSwitch = ({id, checked, onSettingsUpdate}: ToggleSwitchProps) => {
                                 id == 'sound-alarm' ? 
                                 e.currentTarget.checked : 
                                 (document.getElementById('sound-alarm') as HTMLInputElement).checked,
+                            soundAlarmMedia:
+                                id == 'sound-alarm' && e.currentTarget.checked ?
+                                (window.localStorage.getItem('soundAlarmMedia') &&
+                                window.localStorage.getItem('soundAlarmMedia') !== 'null' && 
+                                window.localStorage.getItem('soundAlarmMedia') !== 'undefined' ?
+                                window.localStorage.getItem('soundAlarmMedia') :
+                                'defaultAlarm') : null,
                         }
                     )
                 }}

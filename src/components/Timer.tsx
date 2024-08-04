@@ -5,23 +5,14 @@ import TimerControl from './TimerControl';
 import Note from './Note';
 import Clock from './Clock';
 import { FaBell as BellIcon } from 'react-icons/fa6';
-import media from '../../assets/default.mp3';
+import defaultAlarm from '../../assets/default.mp3';
+import bonusAlarm from '../../assets/bonus.mp3';
+import facilityAlarm from '../../assets/facility.mp3';
+import futuristicAlarm from '../../assets/futuristic.mp3';
+import treasureAlarm from '../../assets/treasure.mp3';
+import unlockAlarm from '../../assets/unlock.mp3';
+import winningAlarm from '../../assets/winning.mp3';
 
-
-type Preferences = {
-    longFormat: boolean,
-    duodecimalClock: boolean,
-    soundAlarm: boolean,
-}
-
-type TimerStateProps = {
-    id?: string,
-    name: string,
-    note: string,
-    alarm: boolean,
-    dragged: boolean,
-    visible: boolean
-}
 
 type TimerProps = {
     timer: TimerStateProps,
@@ -38,16 +29,7 @@ type TimerProps = {
         updateName: (id: string, name: string) => void, 
     },
     settings: Preferences
-}
-
-type TimeProps = {
-    timerId: string,
-    time: number,
-    init: number,
-    new: boolean,
-    active: boolean,
-    recursive: boolean,
-}
+};
 
 
 const Timer = ({timer, events, settings}: TimerProps) => {
@@ -65,6 +47,18 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             updateName
     } = events;
 
+    const audioList = new Map([
+        ['Default', defaultAlarm],
+        ['Bonus', bonusAlarm],
+        ['Facility', facilityAlarm],
+        ['Futuristic', futuristicAlarm],
+        ['Treasure', treasureAlarm],
+        ['Unlock', unlockAlarm],
+        ['Winning', winningAlarm]       
+    ]);
+
+    let audio = audioList.get(settings.soundAlarmMedia) ?? 'Default';
+
     const [time, setTime] = useState<TimeProps>({
         timerId: timer.id,
         time: 0, init: 0,   // seconds (current, initial)
@@ -73,13 +67,13 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         recursive: false,   // reoccuring countdown
     });
 
-    const [noteOpen, setOpen] = useState(false)
+    const [noteOpen, setOpen] = useState(false);
 
     const openNote = () => {
         setOpen(!noteOpen);
-    }
+    };
 
-    const [readMode, setReadMode] = useState(false)
+    const [readMode, setReadMode] = useState(false);
 
     const notebookElement = useRef(null);
 
@@ -114,7 +108,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             thisTimer.appendChild(thisNotebook);
         }
         setReadMode(!readMode);
-    }
+    };
 
     // Clock
     const [clockOpen, setClockVisibility] = useState(false);
@@ -122,18 +116,18 @@ const Timer = ({timer, events, settings}: TimerProps) => {
 
     const showClock = () => {
         setClockVisibility(!clockOpen);
-    }
+    };
 
     const hoursElement = useRef(null);
     const minutesElement = useRef(null);
 
     const setHoursElement = (element: HTMLInputElement) => {
         hoursElement.current = element;
-    }
+    };
 
     const setMinutesElement = (element: HTMLInputElement) => {
         minutesElement.current = element;
-    }
+    };
 
     const resetClock = () => {
         if (hoursElement.current !== null) {
@@ -144,7 +138,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             minutesElement.current.className = "minutes form-control";
             minutesElement.current.value = '';
         }
-    }
+    };
 
     const getTime = (clockTime: Date) => {
         if (!time.time) {
@@ -156,13 +150,13 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             const diff = Math.floor((clockTime.getTime() - now.getTime()) / 1000);
             setTime({...time, time: diff, init: diff, new: false, active: false});
         }
-    }
+    };
 
     const timeOff = (seconds: number) => {
         const now = new Date();
         const then = new Date(now.setSeconds(seconds));
         setClock(then);
-    }
+    };
 
     const notifications = useRef([]);
 
@@ -188,7 +182,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
 
             if (settings.soundAlarm) {
                 const x = window.document.createElement("AUDIO") as HTMLMediaElement;
-                x.setAttribute("src", media);
+                x.setAttribute("src", audio);
                 x.play();
             }
 
@@ -210,7 +204,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             return {...time, time: t, init: init, active: active}
         });
 
-    }
+    };
 
     useEffect(() => {
         let interval: NodeJS.Timeout = null;
@@ -233,7 +227,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         setTime({...time, time: time.time + seconds, init: time.time + seconds, new: false});
         const now = new Date();
         timeOff(time.time + seconds + now.getSeconds());
-    }
+    };
 
     // Reset Time
     const resetTime = () => {
@@ -244,7 +238,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         setClock(new Date(0));
         resetClock();   // UI
         notifications.current.forEach((n) => n.close());
-    }
+    };
 
     // Silence Alarm
     const silenceAlarm = (element: HTMLElement) => {
@@ -254,12 +248,12 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         setTime({...time, active: false});
         notifications.current.forEach((n) => n.close());
         element.className = 'bell';  // clear alarm bell
-    }
+    };
 
     // Rewind time again to init time
     const makeRecursive = () => {
         setTime({...time, recursive: !time.recursive})
-    }
+    };
 
     // Get bell class status
     const getBell = () => {
@@ -270,7 +264,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             return " active"
         }
         else return ""
-    }
+    };
 
     const getTimeAsString = (seconds: number): string => {
         const h: number = Math.floor(seconds / (60 * 60));
@@ -317,7 +311,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             }
             return shortH + ':' + shortM
         }
-    }
+    };
 
     return (
         <div draggable
@@ -362,7 +356,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
                 />
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Timer
+export default Timer;
