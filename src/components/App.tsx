@@ -193,11 +193,12 @@ const App = () => {
                             true :
                             false,  // default
         soundAlarmMedia: window.localStorage.getItem('soundAlarmMedia') &&
-                            window.localStorage.getItem('soundAlarmMedia') !== 'null' && 
+                            window.localStorage.getItem('soundAlarmMedia') !== 'null' &&
                             window.localStorage.getItem('soundAlarmMedia') !== 'undefined' ?
                             window.localStorage.getItem('soundAlarmMedia') :
                             JSON.parse(window.localStorage.getItem('soundAlarm')) ?
                             'defaultAlarm' : null,  // default
+        darkMode: JSON.parse(window.localStorage.getItem('darkMode') ?? 'true'),
     });
 
     const updateSettings = (preferences: Preferences) => {
@@ -386,7 +387,9 @@ const App = () => {
         window.localStorage.setItem('duodecimalClock', preferences.duodecimalClock.toString());
         window.localStorage.setItem('soundAlarm', preferences.soundAlarm.toString());
         window.localStorage.setItem('soundAlarmMedia', (new String(preferences.soundAlarmMedia)).toString());
+        window.localStorage.setItem('darkMode', preferences.darkMode.toString());
         window.localStorage.setItem('mtTimers', JSON.stringify(timers));
+        document.documentElement.setAttribute('data-bs-theme', preferences.darkMode ? 'dark' : 'light');
     }, [preferences, timers]);
 
     const timerEvents = {

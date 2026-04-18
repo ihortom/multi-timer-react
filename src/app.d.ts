@@ -7,6 +7,7 @@ type Preferences = {
     duodecimalClock: boolean,
     soundAlarm: boolean,
     soundAlarmMedia?: string | null,
+    darkMode: boolean,
 };
 
 type TimerStateProps = {

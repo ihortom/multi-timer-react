@@ -3,7 +3,6 @@
 $menu-button-color-active: #17a2b8;
 $timer-width: 496px;
 $timer-note-width: 462px;
-$timer-color: #f8f9fa;
 $timer-border: #17a2b8;
 $timer-control-form-height: 34px;
 $toggle-switch-size: 1.4rem;
@@ -32,13 +31,14 @@ body {
         padding: 0rem 1.2rem 0.3rem;
         &.btn-light {
             border: 1px solid $menu-button-color-active;
+            background-color: transparent;
             color: $menu-button-color-active;
             &:focus {
-                background-color: #f8f9fa;
+                background-color: var(--bs-body-bg);
                 box-shadow: 0 0 0 0;
             }
             &:hover {
-                background-color: #e9ecef;
+                background-color: var(--bs-secondary-bg);
             }
         }
         &.btn-info {
@@ -61,15 +61,15 @@ body {
 
 .timer {
     width: 100%;
-    background-color: $timer-color;
-    border: 1px solid #17a2b8;
+    background-color: var(--bs-tertiary-bg);
+    border: 1px solid $timer-border;
     border-radius: .3rem;
     padding: 0.5rem 0.5rem 0.6rem;
     .timer-note {
         position: absolute;
         height: 90px;
         width: $timer-note-width;
-        background-color: $timer-color;
+        background-color: var(--bs-tertiary-bg);
         z-index: 100;
         h6 {
             margin-bottom: .4rem;
@@ -86,11 +86,11 @@ body {
                 margin: -5px 0 3px 2px;
                 cursor: pointer;
                 padding: 0 5px 2px;
-                color: #212529;
-                background-color: #f8f9fa;
+                color: var(--bs-body-color);
+                background-color: var(--bs-secondary-bg);
                 &:hover {
-                    background-color: #e2e6ea;
-                    border-color: #dae0e5;
+                    background-color: var(--bs-body-bg);
+                    border-color: var(--bs-border-color);
                 }
             }
         }
@@ -102,7 +102,7 @@ body {
         }
         div.notebook {
             margin: 0;
-            border: #dee2e6 1px solid;
+            border: var(--bs-border-color) 1px solid;
             padding: 2px;
             display: inline-block;
             overflow: auto;
@@ -111,9 +111,9 @@ body {
 
     .time {
         float: left;
-        color: #000000;
+        color: var(--bs-emphasis-color);
         &.active {
-            color: #0d6efd;
+            color: var(--bs-primary);
         }
     }
 
@@ -142,29 +142,29 @@ body {
                 height: $timer-control-form-height;
             }
             .btn-primary:focus {
-                background-color: #0d6efd;
+                background-color: var(--bs-primary);
             }
         }
         .bell {
             display: block;
             padding: 7px 70px 5px 10px;
             float: right;
-            color: $timer-color;
+            color: var(--bs-tertiary-bg);
             svg {
                 width: 1.2rem;
                 height: 1.2rem;
             }
         }
         .bell.active {
-            color: #28a745;
+            color: var(--bs-success);
             svg:hover {
-                color: #2c9142;
+                color: var(--bs-success);
                 width: 1.3rem;
                 height: 1.3rem;
             }
         }
         .bell.recursive {
-            color: #0dcaf0
+            color: var(--bs-info);
         }
         .btn {
             margin: 0 1px;
@@ -174,8 +174,8 @@ body {
             box-shadow: 0 0 0 0;
         }
         .btn:active {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
         }
         .clock {
             position: absolute;
@@ -185,7 +185,7 @@ body {
                 font-size: 1.6rem;
                 line-height: 1;
                 padding: 0 .25rem;
-                color: #0d6efd;
+                color: var(--bs-primary);
                 &.warning {
                     background-color: gold;
                 }
@@ -197,9 +197,9 @@ body {
                     width: 50px;
                     height: 34px;
                     padding: 0 2px;
-                    color: #212529;
-                    background-color: #e9ecef;
-                    border: 1px solid #ced4da;
+                    color: var(--bs-body-color);
+                    background-color: var(--bs-secondary-bg);
+                    border: 1px solid var(--bs-border-color);
                 }
                 .dropdown-toggle {
                     padding: 4px;
@@ -240,26 +240,26 @@ body {
                 box-shadow: 0 0 0 0;
             }
             .btn-danger:focus{
-                background-color: #dc3545;
-                border-color: #dc3545;
+                background-color: var(--bs-danger);
+                border-color: var(--bs-danger);
             }
             .btn-danger:active {
-                background-color: #dc3545;
-                border-color: #dc3545;
+                background-color: var(--bs-danger);
+                border-color: var(--bs-danger);
             }
             .btn-secondary:focus{
-                background-color: #6c757d;
-                border-color: #6c757d;
+                background-color: var(--bs-secondary);
+                border-color: var(--bs-secondary);
             }
             .btn-secondary:active {
-                background-color: #6c757d;
-                border-color: #6c757d;
+                background-color: var(--bs-secondary);
+                border-color: var(--bs-secondary);
             }
             .btn-light, .btn-warning, .btn-info {
-                border-color: #6c757d;
+                border-color: var(--bs-secondary);
             }
             .btn-light:hover {
-                background-color: #e9ecef;
+                background-color: var(--bs-secondary-bg);
             }
             button svg {
                 vertical-align: text-top;
@@ -348,7 +348,7 @@ body {
 }
 
 .card-header, .card-footer {
-    background-color: $timer-color;
+    background-color: var(--bs-tertiary-bg);
     border-color: $timer-border;
 }
 

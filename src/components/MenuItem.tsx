@@ -41,7 +41,9 @@ const MenuItem = ({menuItem, events}: MenuItemProps) => {
     }, [hide]);
 
     return (
-        <Button size="lg" disabled={menuItem.disabled} title={menuItem.title}
+        <Button size="lg"
+            disabled={menuItem.disabled} 
+            title={menuItem.title}
             variant={`${menuItem.pressed && menuItem.togglable ? 'info' : 'light' }`}
             onClick={() => {
                 events.onClick(menuItem.id);

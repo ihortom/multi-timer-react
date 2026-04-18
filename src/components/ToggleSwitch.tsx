@@ -18,25 +18,29 @@ const ToggleSwitch = ({id, checked, onSettingsUpdate}: ToggleSwitchProps) => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     onSettingsUpdate(
                         {
-                            longFormat:    
-                                id == 'time-format' ? 
-                                e.currentTarget.checked : 
+                            longFormat:
+                                id == 'time-format' ?
+                                e.currentTarget.checked :
                                 (document.getElementById('time-format') as HTMLInputElement).checked,
-                            duodecimalClock: 
-                                id == 'clock-format' ? 
-                                e.currentTarget.checked : 
+                            duodecimalClock:
+                                id == 'clock-format' ?
+                                e.currentTarget.checked :
                                 (document.getElementById('clock-format') as HTMLInputElement).checked,
-                            soundAlarm:      
-                                id == 'sound-alarm' ? 
-                                e.currentTarget.checked : 
+                            soundAlarm:
+                                id == 'sound-alarm' ?
+                                e.currentTarget.checked :
                                 (document.getElementById('sound-alarm') as HTMLInputElement).checked,
                             soundAlarmMedia:
                                 id == 'sound-alarm' && e.currentTarget.checked ?
                                 (window.localStorage.getItem('soundAlarmMedia') &&
-                                window.localStorage.getItem('soundAlarmMedia') !== 'null' && 
+                                window.localStorage.getItem('soundAlarmMedia') !== 'null' &&
                                 window.localStorage.getItem('soundAlarmMedia') !== 'undefined' ?
                                 window.localStorage.getItem('soundAlarmMedia') :
                                 'defaultAlarm') : null,
+                            darkMode:
+                                id == 'dark-mode' ?
+                                e.currentTarget.checked :
+                                (document.getElementById('dark-mode') as HTMLInputElement).checked,
                         }
                     )
                 }}
