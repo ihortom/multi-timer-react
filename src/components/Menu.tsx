@@ -9,7 +9,7 @@ type MenuItemsProps = {
     menuItems: MenuItemProps["menuItem"][],
     events: {
         onClick: (id: number) => void,
-        addTimer: (timer: TimerStateProps) => void,
+        addTimer: (timer: NewTimerProps) => void,
         cancelDelete: () => void,
         onSettingsUpdate: (preferences: Preferences) => void,
         onHideInactiveTimers: (ids: string[]) => void,

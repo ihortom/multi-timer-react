@@ -1,18 +1,30 @@
 import { ipcRenderer, contextBridge } from 'electron';
 
 
-//Expose protected methods that allow renderer using them
 declare global {
     interface Window {
-        electron: any;
+        electron: {
+            updateBadge: (data: number | string) => void;
+            versions: {
+                node: string;
+                electron: string;
+                chrome: string;
+            };
+            arch: string;
+        };
     }
 }
 
 
-// Expose the ipcRenderer
 contextBridge.exposeInMainWorld('electron', {
     // Update the badge count in Mac OS
-    updateBadge: (data: number) => {
+    updateBadge: (data: number | string) => {
         ipcRenderer.send('badge', data);
-    }
+    },
+    versions: {
+        node: process.versions.node,
+        electron: process.versions.electron,
+        chrome: process.versions.chrome,
+    },
+    arch: process.arch,
 });

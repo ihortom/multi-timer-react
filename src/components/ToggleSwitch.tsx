@@ -36,7 +36,7 @@ const ToggleSwitch = ({id, checked, onSettingsUpdate}: ToggleSwitchProps) => {
                                 window.localStorage.getItem('soundAlarmMedia') !== 'null' &&
                                 window.localStorage.getItem('soundAlarmMedia') !== 'undefined' ?
                                 window.localStorage.getItem('soundAlarmMedia') :
-                                'defaultAlarm') : null,
+                                'Default') : null,
                             darkMode:
                                 id == 'dark-mode' ?
                                 e.currentTarget.checked :

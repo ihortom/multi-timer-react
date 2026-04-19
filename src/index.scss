@@ -1,4 +1,30 @@
-@import 'bootstrap/scss/bootstrap';
+// Bootstrap configuration (variables + helpers — no CSS emitted)
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+
+// Only the component partials the app actually uses
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/dropdown';
+@import 'bootstrap/scss/button-group';
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/progress';
+@import 'bootstrap/scss/spinners';
+
+// Helpers + utilities API (generates utility classes: text-center, text-muted, rounded-circle, d-none, etc.)
+@import 'bootstrap/scss/helpers';
+@import 'bootstrap/scss/utilities/api';
 
 $menu-button-color-active: #17a2b8;
 $timer-width: 496px;
@@ -65,6 +91,13 @@ body {
     border: 1px solid $timer-border;
     border-radius: .3rem;
     padding: 0.5rem 0.5rem 0.6rem;
+    cursor: grab;
+    &:active {
+        cursor: grabbing;
+    }
+    &.dragged {
+        cursor: grabbing;
+    }
     .timer-note {
         position: absolute;
         height: 90px;
@@ -161,6 +194,7 @@ body {
                 color: var(--bs-success);
                 width: 1.3rem;
                 height: 1.3rem;
+                cursor: pointer;
             }
         }
         .bell.recursive {

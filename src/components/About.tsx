@@ -1,9 +1,11 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, version as reactVersion } from 'react';
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import { FaCheck as CheckIcon } from 'react-icons/fa6';
+import appPackage from '../../package.json';
+import bootstrapPackage from 'bootstrap/package.json';
 
 
 type AboutProps = {
@@ -11,22 +13,25 @@ type AboutProps = {
 };
 
 
+const stripRange = (v: string) => v.replace(/^[\^~]/, '');
+
+
 const About = ({open}: AboutProps) => {
 
     const app = {
-        name: "Multi-Timer",
-        version: "2.1.0",
-        node: "20.14.0",
-        electron: "31.1.0",
-        react: "18.3.1",
-        typescript: "4.5.4",
-        bootstrap: "5.3.3",
-        year: 2024,
+        name: appPackage.productName,
+        version: appPackage.version,
+        node: window.electron.versions.node,
+        electron: window.electron.versions.electron,
+        react: reactVersion,
+        typescript: stripRange(appPackage.devDependencies.typescript),
+        bootstrap: bootstrapPackage.version,
+        year: new Date().getFullYear(),
     }
 
-    const [isLastVersion, setIsLastVersion] = useState(null);
+    const [isLastVersion, setIsLastVersion] = useState<boolean | null>(null);
 
-    const lastVersion = useRef(null);
+    const lastVersion = useRef<{ version: string; url: string } | null>(null);
 
     const fetchReleases = async () => {
         try {
@@ -46,16 +51,15 @@ const About = ({open}: AboutProps) => {
 
     useEffect(() => {
         const versionStatus = document.getElementById('version-check');
+        if (!versionStatus) return;
 
         if (isLastVersion) {
             versionStatus.innerText = "You've got the latest version";
         }
-        else {
-            if (lastVersion.current !== null) {
-                versionStatus.innerHTML = 'Version ' + lastVersion.current.version +
-                    ' is availble. <a target="_blank" href="' +
-                    lastVersion.current.url + '">Download</a>';
-            }
+        else if (lastVersion.current !== null) {
+            versionStatus.innerHTML = 'Version ' + lastVersion.current.version +
+                ' is availble. <a target="_blank" href="' +
+                lastVersion.current.url + '">Download</a>';
         }
     }, [isLastVersion, lastVersion]);
 
@@ -91,9 +95,15 @@ const About = ({open}: AboutProps) => {
                     const maxHash = Math.max(...relHashes.map(i => i[1]));
                     const latestRelease = relHashes.filter(i => i[1] === maxHash)[0];
 
+                    const entry = latestRelease[2];
+                    const arch = window.electron.arch;
+                    const url = typeof entry === 'string'
+                        ? entry
+                        : (entry[arch] ?? entry.x64 ?? entry.arm64);
+
                     lastVersion.current = {
                         "version": latestRelease[0],
-                        "url": latestRelease[2]
+                        "url": url
                     };
 
                     const curVerString = app.version.split('.');
@@ -108,7 +118,7 @@ const About = ({open}: AboutProps) => {
                 }
                 else {
                     const verCheckHeader = document.getElementById('version-check-header');
-                    verCheckHeader.hidden = true;
+                    if (verCheckHeader) verCheckHeader.hidden = true;
                 }
             }}
         >
@@ -130,7 +140,7 @@ const About = ({open}: AboutProps) => {
                     <Card.Body>
                     <p>Built with Electron framework and powered by React, TypeScript, and Bootstrap.</p>
                     <p>
-                        Used modules are node {app.node},<br />
+                        Used modules are Node {app.node},<br />
                         Electron {app.electron},<br />
                         React {app.react},<br />
                         TypeScript {app.typescript},<br />
