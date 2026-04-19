@@ -57,7 +57,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         ['Winning', winningAlarm]       
     ]);
 
-    let audio = audioList.get(settings.soundAlarmMedia) ?? 'Default';
+    const audio = audioList.get(settings.soundAlarmMedia ?? '') ?? defaultAlarm;
 
     const [time, setTime] = useState<TimeProps>({
         timerId: timer.id,
@@ -75,7 +75,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
 
     const [readMode, setReadMode] = useState(false);
 
-    const notebookElement = useRef(null);
+    const notebookElement = useRef<HTMLDivElement | null>(null);
 
     const readNote = () => {
 
@@ -118,8 +118,8 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         setClockVisibility(!clockOpen);
     };
 
-    const hoursElement = useRef(null);
-    const minutesElement = useRef(null);
+    const hoursElement = useRef<HTMLInputElement | null>(null);
+    const minutesElement = useRef<HTMLInputElement | null>(null);
 
     const setHoursElement = (element: HTMLInputElement) => {
         hoursElement.current = element;
@@ -158,7 +158,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         setClock(then);
     };
 
-    const notifications = useRef([]);
+    const notifications = useRef<Notification[]>([]);
 
     // Countdown
     const tick = (interval: NodeJS.Timeout) => {
@@ -342,7 +342,11 @@ const Timer = ({timer, events, settings}: TimerProps) => {
                 <TimeButtons onWind={windTimeUp} showClock={showClock} clockOpen={clockOpen} timerId={timer.id}/>
                 <span className={`bell${getBell()}`}>
                     <BellIcon
-                        onClick={(e) => silenceAlarm((e.target as Element).closest('span.bell'))} 
+                        title='Clear'
+                        onClick={(e) => {
+                            const bell = (e.target as Element).closest('span.bell');
+                            if (bell) silenceAlarm(bell as HTMLElement);
+                        }}
                     />
                 </span>
             </div>

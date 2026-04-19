@@ -16,6 +16,7 @@ Visit https://ihortom.github.io for more details and to download the compiled in
 - Hide inactive timers
 - Reorder timers
 - Persistent state
+- Dark mode support
 
 ## Instructions
 

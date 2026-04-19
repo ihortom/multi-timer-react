@@ -6,11 +6,13 @@ import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
+import appPackage from './package.json';
 
 
-const appName = 'Multi-Timer';
-const appVersion = '2.1.0';
-const appCopyright = 'Copyright © 2024 Ihor Tomilenko';
+const appName = appPackage.productName;
+const appVersion = appPackage.version;
+const appArch = process.arch;
+const appCopyright = `Copyright © ${new Date().getFullYear()} ${appPackage.author}`;
 
 const config: ForgeConfig = {
     packagerConfig: {
@@ -21,12 +23,13 @@ const config: ForgeConfig = {
         icon: './assets/multi-timer',
     },
     rebuildConfig: {},
-    makers: [ 
+    makers: [
         new MakerDMG({
-            name: `${appName}_v${appVersion}`,
+            name: `${appName}_v${appVersion}_${appArch}`,
             icon: './assets/multi-timer.icns',
             background: './assets/installer.png',
             overwrite: true,
+            format: 'ULFO',
         })
     ],
     plugins: [
@@ -52,7 +55,7 @@ const config: ForgeConfig = {
         new FusesPlugin({
         version: FuseVersion.V1,
         [FuseV1Options.RunAsNode]: false,
-        [FuseV1Options.EnableCookieEncryption]: true,
+        [FuseV1Options.EnableCookieEncryption]: false,
         [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
         [FuseV1Options.EnableNodeCliInspectArguments]: false,
         [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,

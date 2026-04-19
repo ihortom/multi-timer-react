@@ -97,6 +97,24 @@ const Settings = ({open, settings, onSettingsUpdate}: SettingsProps) => {
                     </Card.Body>
                 </Card>
                 <Card>
+                    <Card.Header as="h6">Theme</Card.Header>
+                    <Card.Body>
+                        <Container fluid>
+                            <Row>
+                                <Col className='left-value'>Light</Col>
+                                <Col xs={2}>
+                                    <ToggleSwitch
+                                        id="dark-mode"
+                                        checked={settings.darkMode}
+                                        onSettingsUpdate={onSettingsUpdate}
+                                    />
+                                </Col>
+                                <Col className='right-value'>Dark</Col>
+                            </Row>
+                        </Container>
+                    </Card.Body>
+                </Card>
+                <Card>
                     <Card.Header as="h6">Sound alarm</Card.Header>
                     <Card.Body>
                         <Container fluid>

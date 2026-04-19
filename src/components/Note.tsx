@@ -9,14 +9,7 @@ import {
 
 
 type NoteProps = {
-    timer: {
-        id?: string,
-        name: string,
-        note: string,
-        alarm: boolean,
-        dragged: boolean,
-        visible: boolean,
-    },
+    timer: TimerStateProps,
     time: string,
     open: boolean,
     readMode: boolean,

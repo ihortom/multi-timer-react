@@ -38,8 +38,8 @@ const Clock = ({open, timerId, time, countdown, duodecimalClock,
 
     const [clockTime, setTime] = useState(time);
 
-    const handleSelect = (e: string) => {
-        setClockFormat(e);
+    const handleSelect = (eventKey: string | null) => {
+        if (eventKey !== null) setClockFormat(eventKey);
     };
 
     useEffect(() => {

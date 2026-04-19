@@ -55,7 +55,8 @@ const AudioListItem =
                 settings.soundAlarmMedia = title;
                 window.localStorage.setItem('soundAlarmMedia', title);
                 onSettingsUpdate(settings);
-                document.getElementById('sound-alarm-media').innerText = title;
+                const mediaLabel = document.getElementById('sound-alarm-media');
+                if (mediaLabel) mediaLabel.innerText = title;
                 (e.target as HTMLElement).setAttribute('active', 'true')
             }}
             onMouseOver={(e) => {

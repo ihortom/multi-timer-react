@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { JSX } from 'react';
 import Button from 'react-bootstrap/Button';
 
 
@@ -13,7 +14,7 @@ export type MenuItemProps = {
     },
     events: {
         onClick: (id: number) => void,
-        addTimer: (timer: TimerStateProps) => void,
+        addTimer: (timer: NewTimerProps) => void,
         cancelDelete: () => void,
         onSettingsUpdate: (preferences: Preferences) => void,
         onHideInactiveTimers: (ids: string[]) => void,
@@ -41,19 +42,20 @@ const MenuItem = ({menuItem, events}: MenuItemProps) => {
     }, [hide]);
 
     return (
-        <Button size="lg" disabled={menuItem.disabled} title={menuItem.title}
+        <Button size="lg"
+            disabled={menuItem.disabled} 
+            title={menuItem.title}
             variant={`${menuItem.pressed && menuItem.togglable ? 'info' : 'light' }`}
             onClick={() => {
                 events.onClick(menuItem.id);
                 if (menuItem.id === 1) {    // add timer
-                    const timer: TimerStateProps = {
+                    events.addTimer({
                         name: '',
                         note: '',
                         alarm: false,
                         dragged: false,
                         visible: true,
-                    };
-                    events.addTimer(timer);
+                    });
                 }
                 if (menuItem.id === 2) {   // stop all timers
                     const stopButtons = document.getElementsByClassName("stop-timer");

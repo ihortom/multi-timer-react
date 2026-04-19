@@ -16,16 +16,16 @@ import { MenuItemProps } from './MenuItem';
 
 
 type DraggableTimerProps = {
-    timer?: TimerStateProps,
-    clientY?: number,
-    index?: number,
-    status?: string
+    timer: TimerStateProps,
+    clientY: number,
+    index: number,
+    status: string
 };
 
 type TargettedTimerProps = {
-    timer?: TimerStateProps,
-    clientY?: number,
-    index?: number
+    timer: TimerStateProps,
+    clientY: number,
+    index: number
 };
 
 
@@ -182,22 +182,17 @@ const App = () => {
     };
 
     // App preferences block
-    const [preferences, setPreferences] = useState<Preferences>({
-        longFormat: JSON.parse(window.localStorage.getItem('timeLong')) ?
-                            true :  // default
-                            false,
-        duodecimalClock: JSON.parse(window.localStorage.getItem('duodecimalClock')) ?
-                            true :
-                            false,  // default
-        soundAlarm: JSON.parse(window.localStorage.getItem('soundAlarm')) ?
-                            true :
-                            false,  // default
-        soundAlarmMedia: window.localStorage.getItem('soundAlarmMedia') &&
-                            window.localStorage.getItem('soundAlarmMedia') !== 'null' && 
-                            window.localStorage.getItem('soundAlarmMedia') !== 'undefined' ?
-                            window.localStorage.getItem('soundAlarmMedia') :
-                            JSON.parse(window.localStorage.getItem('soundAlarm')) ?
-                            'defaultAlarm' : null,  // default
+    const [preferences, setPreferences] = useState<Preferences>(() => {
+        const storedMedia = window.localStorage.getItem('soundAlarmMedia');
+        const soundAlarm = JSON.parse(window.localStorage.getItem('soundAlarm') ?? 'false');
+        const hasValidMedia = storedMedia && storedMedia !== 'null' && storedMedia !== 'undefined';
+        return {
+            longFormat: JSON.parse(window.localStorage.getItem('timeLong') ?? 'false'),
+            duodecimalClock: JSON.parse(window.localStorage.getItem('duodecimalClock') ?? 'false'),
+            soundAlarm,
+            soundAlarmMedia: hasValidMedia ? storedMedia : (soundAlarm ? 'Default' : null),
+            darkMode: JSON.parse(window.localStorage.getItem('darkMode') ?? 'false'),
+        };
     });
 
     const updateSettings = (preferences: Preferences) => {
@@ -206,32 +201,30 @@ const App = () => {
 
 
     // Timers block
-    const [timers, setTimers] = useState<TimerStateProps[]>(
-        JSON.parse(window.localStorage.getItem('mtTimers')) ?
-        JSON.parse(window.localStorage.getItem('mtTimers')) :
-        [{
+    const [timers, setTimers] = useState<TimerStateProps[]>(() => {
+        const stored = JSON.parse(window.localStorage.getItem('mtTimers') ?? 'null');
+        return stored ?? [{
             id: uuid(),
             name: '',
             note: '',
             alarm: false,
             dragged: false,
             visible: true,
-        }]
-    );
+        }];
+    });
 
-    const [draggedTimer, setDraggedTimer] = useState<DraggableTimerProps>({});
+    const [draggedTimer, setDraggedTimer] = useState<DraggableTimerProps | null>(null);
 
-    const [targetTimer, setTargetTimer] = useState<TargettedTimerProps>({});
+    const [targetTimer, setTargetTimer] = useState<TargettedTimerProps | null>(null);
 
-    const addTimer = (timer: TimerStateProps) => {
+    const addTimer = (timer: NewTimerProps) => {
         if (timers.length === 0)
             setMenuItems(
                 menuItems.map((btn) => [2,3,4].includes(btn.id) ?
                 {...btn, disabled: false} : btn)
             );
-        
-        const id = uuid();
-        const newTimer = { id:id, ...timer }
+
+        const newTimer: TimerStateProps = { id: uuid(), ...timer };
         setTimers(timers.concat([newTimer]));
     };
 
@@ -281,8 +274,7 @@ const App = () => {
     };
 
     const moveTimerUp = (id: string) => {
-        const indexOfThisTimer = timers.map((timer,index) => timer.id === id ? index : 0)
-                                       .find(i => i)
+        const indexOfThisTimer = timers.findIndex(timer => timer.id === id);
         if (indexOfThisTimer > 0) {
             const thisTimer = timers[indexOfThisTimer];
             const prevTimer = timers[indexOfThisTimer - 1];
@@ -293,10 +285,8 @@ const App = () => {
     };
 
     const moveTimerDown = (id: string) => {
-        const i = timers.map((timer,index) => timer.id === id ? index : 0)
-                        .find(i => i);
-        const indexOfThisTimer = i ? i : 0;
-        if (indexOfThisTimer < timers.length - 1) {
+        const indexOfThisTimer = timers.findIndex(timer => timer.id === id);
+        if (indexOfThisTimer >= 0 && indexOfThisTimer < timers.length - 1) {
             const thisTimer = timers[indexOfThisTimer];
             const nextTimer = timers[indexOfThisTimer + 1];
             const a1 = timers.slice(0, indexOfThisTimer);
@@ -306,26 +296,33 @@ const App = () => {
     };
 
     const dragTimerStart = (id: string, e: React.DragEvent) => {
-        const i = timers.map((timer,index) => timer.id === id ? index : 0)
-                        .find(i => i)
-        const indexOfThisTimer = i ? i : 0
+        const indexOfThisTimer = timers.findIndex(timer => timer.id === id);
+        const timer = timers[indexOfThisTimer];
+        if (!timer) return;
+        
+        // hide the native drag ghost so the drag feels constrained to the vertical axis;
+        const emptyImg = new Image();
+        emptyImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
+        e.dataTransfer.setDragImage(emptyImg, 0, 0);
+        e.dataTransfer.effectAllowed = 'move';
         setDraggedTimer({
-            timer: timers.find(timer => timer.id === id),
+            timer,
             clientY: e.clientY,
             index: indexOfThisTimer,
             status: 'start'
-        })
-        setTimers(timers.map(timer => timer.id === id ? {...timer, dragged: true} : timer));
+        });
+        setTimers(timers.map(t => t.id === id ? {...t, dragged: true} : t));
     };
 
     const dragTimerOver = (id: string, e: React.DragEvent) => {
         e.preventDefault();
-        const i = timers.map((timer,index) => timer.id === id ? index : 0)
-                        .find(i => i);
-        const indexOfThisTimer = i ? i : 0;
+        e.dataTransfer.dropEffect = 'move';
+        const indexOfThisTimer = timers.findIndex(timer => timer.id === id);
+        const timer = timers[indexOfThisTimer];
+        if (!timer) return;
         // spot to be dropped on
         setTargetTimer({
-            timer: timers.find(timer => timer.id === id),
+            timer,
             clientY: e.clientY,
             index: indexOfThisTimer
         });
@@ -340,37 +337,36 @@ const App = () => {
 
     const dragTimerLeave = (id: string, e: React.DragEvent) => {
         e.preventDefault();
-        setTargetTimer({});
+        setTargetTimer(null);
     };
 
     const dropTimer = (id: string, e: React.DragEvent) => {
         e.preventDefault();
-        if (Object.keys(targetTimer).length) {
-            if (draggedTimer.index === targetTimer.index) {
-                // reset
-                setTargetTimer({});
-                setDraggedTimer({});
-            }
-            else if (draggedTimer.clientY < targetTimer.clientY) { // drag down
-                const a1 = timers.slice(0, draggedTimer.index);
-                const a2 = timers.slice(draggedTimer.index + 1, targetTimer.index + 1);
-                const a3 = timers.slice(targetTimer.index + 1, timers.length);
-                setTimers([...a1, ...a2, draggedTimer.timer, ...a3]);
-            }
-            else {    // drag up
-                const a1 = timers.slice(0, targetTimer.index);
-                const a2 = timers.slice(targetTimer.index + 1, draggedTimer.index);
-                const a3 = draggedTimer.index < timers.length ?
-                    timers.slice(draggedTimer.index + 1, timers.length) : [];
-                setTimers([...a1, draggedTimer.timer, ...a2, targetTimer.timer, ...a3]);
+        if (!draggedTimer) return;
+
+        if (targetTimer) {
+            if (draggedTimer.index !== targetTimer.index) {
+                if (draggedTimer.clientY < targetTimer.clientY) { // drag down
+                    const a1 = timers.slice(0, draggedTimer.index);
+                    const a2 = timers.slice(draggedTimer.index + 1, targetTimer.index + 1);
+                    const a3 = timers.slice(targetTimer.index + 1, timers.length);
+                    setTimers([...a1, ...a2, draggedTimer.timer, ...a3]);
+                }
+                else {    // drag up
+                    const a1 = timers.slice(0, targetTimer.index);
+                    const a2 = timers.slice(targetTimer.index + 1, draggedTimer.index);
+                    const a3 = draggedTimer.index < timers.length ?
+                        timers.slice(draggedTimer.index + 1, timers.length) : [];
+                    setTimers([...a1, draggedTimer.timer, ...a2, targetTimer.timer, ...a3]);
+                }
             }
         }
         else {
             setTimers(timers.concat(draggedTimer.timer));
         }
         // reset
-        setTargetTimer({});
-        setDraggedTimer({});
+        setTargetTimer(null);
+        setDraggedTimer(null);
     };
 
     const addNote = (id: string, note: string) => {
@@ -386,7 +382,9 @@ const App = () => {
         window.localStorage.setItem('duodecimalClock', preferences.duodecimalClock.toString());
         window.localStorage.setItem('soundAlarm', preferences.soundAlarm.toString());
         window.localStorage.setItem('soundAlarmMedia', (new String(preferences.soundAlarmMedia)).toString());
+        window.localStorage.setItem('darkMode', preferences.darkMode.toString());
         window.localStorage.setItem('mtTimers', JSON.stringify(timers));
+        document.documentElement.setAttribute('data-bs-theme', preferences.darkMode ? 'dark' : 'light');
     }, [preferences, timers]);
 
     const timerEvents = {
