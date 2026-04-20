@@ -207,15 +207,10 @@ const Timer = ({timer, events, settings}: TimerProps) => {
     };
 
     useEffect(() => {
-        let interval: NodeJS.Timeout = null;
-        if (time.time || time.init) {
-            interval = setInterval(() => {
-                tick(interval);
-            }, 1000);
-        }
-        else {
-            clearInterval(interval);
-        }
+        if (!time.time && !time.init) return;
+        const interval = setInterval(() => {
+            tick(interval);
+        }, 1000);
         return () => clearInterval(interval);
     }, [time]);
 

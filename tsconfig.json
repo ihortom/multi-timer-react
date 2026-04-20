@@ -8,16 +8,16 @@
         "esModuleInterop": true,
         "noImplicitAny": true,
         "sourceMap": false,
-        "baseUrl": ".",
         "outDir": "dist",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "jsx": "react-jsx"
     },
     "include": ["src/**/*"],
     "ts-node": {
         "compilerOptions": {
-            "module": "commonjs"
+            "module": "commonjs",
+            "moduleResolution": "node10"
         }
     }
 }
