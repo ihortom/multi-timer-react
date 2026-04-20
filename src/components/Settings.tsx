@@ -139,7 +139,7 @@ const Settings = ({open, settings, onSettingsUpdate}: SettingsProps) => {
                                             id="sound-alarm-media"
                                             variant="info"
                                             title={
-                                                Array.from(audioList.keys()).includes(settings.soundAlarmMedia) ? 
+                                                settings.soundAlarmMedia && audioList.has(settings.soundAlarmMedia) ?
                                                 settings.soundAlarmMedia : 'Default'
                                             }
                                         >

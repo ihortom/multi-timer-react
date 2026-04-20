@@ -101,22 +101,20 @@ app.on('activate', () => {
 // Receive and respond to synchronous message
 // Set or remove notification badge
 ipcMain.on('badge', (event, args) => {
-    if (process.platform === 'darwin') {
+    const dock = app.dock;
+    if (process.platform === 'darwin' && dock) {
         if (args != 0) {
-            if (app.dock.getBadge()) {
-                const badgeCount = parseInt(app.dock.getBadge()) + args;
-                badgeCount > 0 ?
-                app.dock.setBadge((parseInt(app.dock.getBadge()) + args).toString()) :
-                app.dock.setBadge('')
+            const current = dock.getBadge();
+            if (current) {
+                const badgeCount = parseInt(current) + args;
+                dock.setBadge(badgeCount > 0 ? badgeCount.toString() : '');
             }
             else {
-                args > 0 ?
-                app.dock.setBadge(args.toString()) :
-                app.dock.setBadge('')
+                dock.setBadge(args > 0 ? args.toString() : '');
             }
         }
         else {
-            app.dock.setBadge('');
+            dock.setBadge('');
         }
         event.returnValue = true;
     }
