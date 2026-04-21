@@ -98,6 +98,18 @@ app.on('activate', () => {
     }
 });
 
+// Open a URL in the user's default browser
+ipcMain.on('open-external', async (_event, url: string) => {
+    try {
+        const parsed = new URL(url);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+            await shell.openExternal(url);
+        }
+    } catch {
+        // Invalid URL — ignore
+    }
+});
+
 // Receive and respond to synchronous message
 // Set or remove notification badge
 ipcMain.on('badge', (event, args) => {

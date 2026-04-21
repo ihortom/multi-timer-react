@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef, version as reactVersion } from 'react';
+import { useState, version as reactVersion } from 'react';
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
@@ -31,11 +31,13 @@ const About = ({open}: AboutProps) => {
 
     const [isLastVersion, setIsLastVersion] = useState<boolean | null>(null);
 
-    const lastVersion = useRef<{ version: string; url: string } | null>(null);
+    const [lastVersion, setLastVersion] = useState<{ version: string; url: string } | null>(null);
 
     const fetchReleases = async () => {
         try {
-            const res = await fetch('https://ihortom.github.io/download/releases.json');
+            const res = await fetch('https://ihortom.github.io/download/releases.json', {
+                cache: 'no-store',
+            });
 
             if (res.ok) {
                 return await res.json();
@@ -48,20 +50,6 @@ const About = ({open}: AboutProps) => {
             return null;
         }
     }
-
-    useEffect(() => {
-        const versionStatus = document.getElementById('version-check');
-        if (!versionStatus) return;
-
-        if (isLastVersion) {
-            versionStatus.innerText = "You've got the latest version";
-        }
-        else if (lastVersion.current !== null) {
-            versionStatus.innerHTML = 'Version ' + lastVersion.current.version +
-                ' is availble. <a target="_blank" href="' +
-                lastVersion.current.url + '">Download</a>';
-        }
-    }, [isLastVersion, lastVersion]);
 
     return (
         <Collapse 
@@ -101,10 +89,10 @@ const About = ({open}: AboutProps) => {
                         ? entry
                         : (entry[arch] ?? entry.x64 ?? entry.arm64);
 
-                    lastVersion.current = {
-                        "version": latestRelease[0],
-                        "url": url
-                    };
+                    setLastVersion({
+                        version: latestRelease[0],
+                        url: url
+                    });
 
                     const curVerString = app.version.split('.');
                     const currentHash = parseInt(curVerString[0])*10000 + parseInt(curVerString[1])*100 + parseInt(curVerString[2]);
@@ -135,7 +123,24 @@ const About = ({open}: AboutProps) => {
                         <CheckIcon
                             className={`text-success ${isLastVersion ? "visible" : "hidden"}`}
                         />{' '}
-                        <span id="version-check">Checking for updates...</span>
+                        <span id="version-check">
+                            {isLastVersion === null && "Checking for updates..."}
+                            {isLastVersion === true && "You've got the latest version"}
+                            {isLastVersion === false && lastVersion && (
+                                <>
+                                    Version {lastVersion.version} is available.{' '}
+                                    <a
+                                        href={lastVersion.url}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            window.electron.openExternal(lastVersion.url);
+                                        }}
+                                    >
+                                        Download
+                                    </a>
+                                </>
+                            )}
+                        </span>
                     </Card.Header>
                     <Card.Body>
                     <p>Built with Electron framework and powered by React, TypeScript, and Bootstrap.</p>
