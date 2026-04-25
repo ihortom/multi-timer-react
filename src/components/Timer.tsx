@@ -158,7 +158,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         setClock(then);
     };
 
-    const notifications = useRef<Notification[]>([]);
+    const notifications = useRef<string[]>([]);
 
     // Countdown
     const tick = (interval: NodeJS.Timeout) => {
@@ -186,10 +186,9 @@ const Timer = ({timer, events, settings}: TimerProps) => {
                 x.play();
             }
 
-            const notification = new Notification('Multi-Timer', {
-                body: timerName
-            });
-            notifications.current.push(notification);
+            const notificationId = crypto.randomUUID();
+            window.electron.showNotification(notificationId, 'Multi-Timer', timerName);
+            notifications.current.push(notificationId);
 
 
             if (!time.recursive) {
@@ -232,7 +231,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
         setTime({...time, time: 0, init: 0, new: true, active: false});
         setClock(new Date(0));
         resetClock();   // UI
-        notifications.current.forEach((n) => n.close());
+        notifications.current.forEach((id) => window.electron.closeNotification(id));
     };
 
     // Silence Alarm
@@ -241,7 +240,7 @@ const Timer = ({timer, events, settings}: TimerProps) => {
             window.electron.updateBadge(-1);
         }
         setTime({...time, active: false});
-        notifications.current.forEach((n) => n.close());
+        notifications.current.forEach((id) => window.electron.closeNotification(id));
         element.className = 'bell';  // clear alarm bell
     };
 

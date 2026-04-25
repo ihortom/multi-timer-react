@@ -6,6 +6,8 @@ declare global {
         electron: {
             updateBadge: (data: number | string) => void;
             openExternal: (url: string) => void;
+            showNotification: (id: string, title: string, body: string) => void;
+            closeNotification: (id: string) => void;
             versions: {
                 node: string;
                 electron: string;
@@ -25,6 +27,12 @@ contextBridge.exposeInMainWorld('electron', {
     // Open a URL in the user's default browser
     openExternal: (url: string) => {
         ipcRenderer.send('open-external', url);
+    },
+    showNotification: (id: string, title: string, body: string) => {
+        ipcRenderer.sendSync('show-notification', { id, title, body });
+    },
+    closeNotification: (id: string) => {
+        ipcRenderer.send('close-notification', id);
     },
     versions: {
         node: process.versions.node,
