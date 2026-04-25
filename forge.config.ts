@@ -21,8 +21,26 @@ const config: ForgeConfig = {
         appCopyright: `${appCopyright}`,
         asar: true,
         icon: './assets/multi-timer',
+        appBundleId: 'com.electron.multi-timer',
     },
     rebuildConfig: {},
+    hooks: {
+        postPackage: async (_forgeConfig, packageResult) => {
+            if (process.platform !== 'darwin') return;
+            const { execSync } = await import('child_process');
+            for (const outputPath of packageResult.outputPaths) {
+                // Re-sign the outer bundle only (no --deep) so the bundle identity becomes
+                // com.electron.multi-timer. The inner Electron Framework is intentionally
+                // left untouched — its pages contain Fuse values in sections excluded from
+                // the original signature; re-signing it (as osxSign --deep does) causes a
+                // Code Signature Invalid crash at startup.
+                execSync(
+                    `codesign --force --sign - --identifier "com.electron.multi-timer" "${outputPath}/Multi-Timer.app"`,
+                    { stdio: 'inherit' }
+                );
+            }
+        },
+    },
     makers: [
         new MakerDMG({
             name: `${appName}_v${appVersion}_${appArch}`,
