@@ -29,13 +29,32 @@ const config: ForgeConfig = {
             if (process.platform !== 'darwin') return;
             const { execSync } = await import('child_process');
             for (const outputPath of packageResult.outputPaths) {
-                // Re-sign the outer bundle only (no --deep) so the bundle identity becomes
-                // com.electron.multi-timer. The inner Electron Framework is intentionally
-                // left untouched — its pages contain Fuse values in sections excluded from
-                // the original signature; re-signing it (as osxSign --deep does) causes a
-                // Code Signature Invalid crash at startup.
+                const appPath = `${outputPath}/Multi-Timer.app`;
+                const frameworkPath = `${appPath}/Contents/Frameworks/Electron Framework.framework`;
+
+                // Apple Silicon ships every nested binary ad-hoc signed; Intel ships them
+                // unsigned. Outer-bundle signing without --deep requires nested frameworks
+                // and helpers to already have a signature, so on x64 we ad-hoc deep-sign
+                // first. On arm64 we must NOT deep-sign — Fuse bytes (e.g. the embedded
+                // ASAR integrity hash) live in regions excluded from the existing Framework
+                // signature, and re-signing causes a Code Signature Invalid crash at startup.
+                let needsDeepSign = false;
+                try {
+                    execSync(`codesign --verify "${frameworkPath}"`, { stdio: 'ignore' });
+                } catch {
+                    needsDeepSign = true;
+                }
+                if (needsDeepSign) {
+                    execSync(
+                        `codesign --force --sign - --deep "${appPath}"`,
+                        { stdio: 'inherit' }
+                    );
+                }
+
+                // Re-sign the outer bundle (no --deep) so the bundle identity becomes
+                // com.electron.multi-timer without disturbing nested signatures.
                 execSync(
-                    `codesign --force --sign - --identifier "com.electron.multi-timer" "${outputPath}/Multi-Timer.app"`,
+                    `codesign --force --sign - --identifier "com.electron.multi-timer" "${appPath}"`,
                     { stdio: 'inherit' }
                 );
             }
